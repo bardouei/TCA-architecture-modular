@@ -1,0 +1,18 @@
+//
+//  String+Extensions.swift
+//  BaseCore
+//
+//  Created by baner on 12/12/25.
+//
+
+import Foundation
+
+public extension String {
+    var isNotEmpty: Bool {
+        !isEmpty
+    }
+
+    func trimmed() -> String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
