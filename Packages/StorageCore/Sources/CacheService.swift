@@ -13,8 +13,6 @@ public protocol CacheService: Sendable {
     func remove(_ key: String) async
 }
 
-import Foundation
-
 public actor DiskCache: CacheService {
 
     private let directory: URL

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Post: Codable, Equatable, Sendable, Identifiable {
+public struct EntityPost: Codable, Equatable, Sendable, Identifiable {
     public let id: Int
     public let title: String
     public let body: String

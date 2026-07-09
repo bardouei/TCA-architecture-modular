@@ -11,19 +11,37 @@ let package = Package(
             name: "FeatureHome",
             targets: ["FeatureHome"]
         ),
+        .library(
+            name: "PostDetailFeature",
+            targets: ["PostDetailFeature"]
+        )
     ],
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "1.23.0"
         ),
-        
         .package(path: "../NetworkCore"),
         .package(path: "../StorageCore"),
         .package(path: "../DomainCore"),
         .package(path: "../TCAAdapters")
     ],
     targets: [
+
+        // 🔹 PostDetailFeature target
+        .target(
+            name: "PostDetailFeature",
+            dependencies: [
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+                "DomainCore"
+            ],
+            path: "Sources/PostDetailFeature"
+        ),
+
+        // 🔹 Home Feature target
         .target(
             name: "FeatureHome",
             dependencies: [
@@ -31,12 +49,13 @@ let package = Package(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
                 ),
-                
                 "NetworkCore",
                 "StorageCore",
                 "DomainCore",
+                "PostDetailFeature",
                 "TCAAdapters"
-            ]
+            ],
+            path: "Sources/FeatureHome"
         )
     ]
 )

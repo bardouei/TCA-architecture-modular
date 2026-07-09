@@ -15,7 +15,8 @@ let package = Package(
         .package(path: "../StorageCore"),
         .package(path: "../DomainCore"),
         .package(path: "../FeatureSplash"),
-        .package(path: "../FeatureHome")
+        .package(path: "../FeatureHome"),
+        .package(path: "../DesignSystem")
     ],
     targets: [
         .target(
@@ -26,7 +27,8 @@ let package = Package(
                 "StorageCore",
                 "DomainCore",
                 "FeatureSplash",
-                "FeatureHome"
+                "FeatureHome",
+                "DesignSystem"
             ]
         )
     ]

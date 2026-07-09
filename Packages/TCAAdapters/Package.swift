@@ -10,16 +10,16 @@ let package = Package(
         .library(
             name: "TCAAdapters",
             targets: ["TCAAdapters"]
-        )
+        ),
     ],
     dependencies: [
-        // TCA
+        // ✅ TCA
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "1.23.0"
         ),
-        
-        // Core layers
+
+        // ✅ Coreها
         .package(path: "../NetworkCore"),
         .package(path: "../StorageCore")
     ],
@@ -27,16 +27,17 @@ let package = Package(
         .target(
             name: "TCAAdapters",
             dependencies: [
-                // TCA
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
                 ),
-                
-                // Core
                 "NetworkCore",
                 "StorageCore"
             ]
-        )
+        ),
+        .testTarget(
+            name: "TCAAdaptersTests",
+            dependencies: ["TCAAdapters"]
+        ),
     ]
 )
