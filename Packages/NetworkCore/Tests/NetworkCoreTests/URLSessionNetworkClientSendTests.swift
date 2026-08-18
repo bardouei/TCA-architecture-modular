@@ -38,7 +38,7 @@ final class MockSession: URLSessionProtocol, @unchecked Sendable {
 // MARK: - Mock RequestBuilder
 
 /// Mock برای RequestBuilderProtocol
-final class MockRequestBuilder: RequestBuilderProtocol {
+final class MockRequestBuilder: RequestBuilderProtocol, @unchecked Sendable {
     var urlRequest = URLRequest(url: URL(string: "https://example.com/api")!)
     private(set) var lastNetworkRequest: NetworkRequest?
 
@@ -55,7 +55,7 @@ final class MockRequestBuilder: RequestBuilderProtocol {
 // MARK: - Mock ResponseHandler
 
 /// Mock برای ResponseHandlerProtocol
-final class MockResponseHandler: ResponseHandlerProtocol {
+final class MockResponseHandler: ResponseHandlerProtocol, @unchecked Sendable {
     var responseToReturn: NetworkResponse?
     var errorToThrow: Error?
 

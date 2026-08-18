@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "StorageCore",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(
             name: "StorageCore",
@@ -14,7 +14,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "StorageCore"
+            name: "StorageCore",
+            resources: [
+                .process("Infrastructure/CoreData/CoreDataModel.xcdatamodeld")
+            ]
         ),
         .testTarget(
             name: "StorageCoreTests",

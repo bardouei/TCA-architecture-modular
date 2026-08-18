@@ -6,16 +6,14 @@
 //
 
 import Foundation
-import NetworkCore
 import DomainCore
 import PostDetailFeature
 import ComposableArchitecture
-import TCAAdapters
 
 @Reducer
 public struct HomeFeature {
 
-    @Dependency(\.networkClient) var networkClient
+    @Dependency(\.postsClient) var postsClient
 
     public init() {}
 
@@ -26,32 +24,35 @@ public struct HomeFeature {
 }
 
 extension HomeFeature {
+
+    private enum CancelID {
+        case loadPosts
+    }
     
     func core(state: inout State, action: Action) -> Effect<Action> {
         switch action {
             
         case .onAppear:
-            let networkClient = self.networkClient
+            state.isLoading = true
+            state.error = nil
+            let postsClient = self.postsClient
             
             return .run { send in
-                do {
-                    let response = try await networkClient.send(
-                        NetworkRequest(path: "/posts")
-                    )
-                    
-                    let posts = try JSONDecoder().decode(
-                        [EntityPost].self,
-                        from: response.data
-                    )
-                    
-                    await send(.postsLoaded(posts))
-                } catch {
-                    print("❌ Network error:", error)
-                }
+                await send(.postsResponse(TaskResult {
+                    try await postsClient.fetchPosts()
+                }))
             }
+            .cancellable(id: CancelID.loadPosts, cancelInFlight: true)
             
-        case let .postsLoaded(posts):
+        case let .postsResponse(.success(posts)):
+            state.isLoading = false
             state.posts = posts
+            state.error = nil
+            return .none
+
+        case let .postsResponse(.failure(error)):
+            state.isLoading = false
+            state.error = error.localizedDescription
             return .none
             
         case let .postTapped(post):

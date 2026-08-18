@@ -13,15 +13,15 @@ import DesignSystem
 
 public struct HomeView: View {
     
-    let store: StoreOf<HomeFeature>
+    @Bindable var store: StoreOf<HomeFeature>
     
     public init(store: StoreOf<HomeFeature>) {
         self.store = store
     }
     
     public var body: some View {
-        NavigationStackStore(
-            store.scope(state: \.path, action: \.path)
+        NavigationStack(
+            path: $store.scope(state: \.path, action: \.path)
         ) {
             
             ZStack {
@@ -33,9 +33,9 @@ public struct HomeView: View {
                 }
             }
             .navigationTitle("Home")
-            .navigationBarTitleDisplayMode(.large)
+            .homeNavigationTitleDisplayMode()
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: refreshToolbarPlacement) {
                     Button {
                         store.send(.onAppear)
                     } label: {
@@ -57,6 +57,13 @@ public struct HomeView: View {
 }
 
 private extension HomeView {
+    var refreshToolbarPlacement: ToolbarItemPlacement {
+        #if os(iOS)
+        return .topBarTrailing
+        #else
+        return .automatic
+        #endif
+    }
     
     @ViewBuilder
     var content: some View {
@@ -67,6 +74,17 @@ private extension HomeView {
         } else {
             postsList
         }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func homeNavigationTitleDisplayMode() -> some View {
+        #if os(iOS)
+        navigationBarTitleDisplayMode(.large)
+        #else
+        self
+        #endif
     }
 }
 

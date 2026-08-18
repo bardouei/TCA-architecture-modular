@@ -53,7 +53,7 @@ final class ResponseHandlerValidateTests: XCTestCase {
 extension XCTestCase {
     func XCTAssertNoThrowAsync(
         _ expression: @escaping () async throws -> Void,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line
     ) async {
         do {

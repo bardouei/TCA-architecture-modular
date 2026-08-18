@@ -17,19 +17,17 @@ public struct PostDetailView: View {
     }
 
     public var body: some View {
-        WithPerceptionTracking {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(store.post.title)
-                        .font(.title2)
-                        .fontWeight(.semibold)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(store.post.title)
+                    .font(.title2)
+                    .fontWeight(.semibold)
 
-                    Text(store.post.body)
-                        .font(.body)
-                }
-                .padding()
+                Text(store.post.body)
+                    .font(.body)
             }
-            .navigationTitle("Post")
+            .padding()
         }
+        .navigationTitle("Post")
     }
 }

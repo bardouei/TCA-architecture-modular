@@ -153,24 +153,24 @@ final class RequestQueueTests: XCTestCase {
         let lowRequest = NetworkRequest(baseURL: baseURL, path: "/low")
         let highRequest = NetworkRequest(baseURL: baseURL, path: "/high")
 
-        var completedPaths: [String] = []
-        completedPaths.reserveCapacity(2)
+        let completedPaths = PathRecorder()
 
         async let low: Void = {
             let response = try await queue.enqueue(lowRequest, priority: .low)
-            completedPaths.append(response.request.path)
+            await completedPaths.append(response.request.path)
         }()
 
         try await Task.sleep(nanoseconds: 10_000_000)
 
         async let high: Void = {
             let response = try await queue.enqueue(highRequest, priority: .high)
-            completedPaths.append(response.request.path)
+            await completedPaths.append(response.request.path)
         }()
 
         _ = try await (low, high)
 
-        XCTAssertEqual(Set(completedPaths), Set(["/low", "/high"]))
+        let paths = await completedPaths.values
+        XCTAssertEqual(Set(paths), Set(["/low", "/high"]))
     }
 
     func test_cancelAll_cancelsPendingRequests() async {
@@ -209,5 +209,17 @@ final class RequestQueueTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(cancelledCount, 0)
+    }
+}
+
+private actor PathRecorder {
+    private var storage: [String] = []
+
+    var values: [String] {
+        storage
+    }
+
+    func append(_ value: String) {
+        storage.append(value)
     }
 }

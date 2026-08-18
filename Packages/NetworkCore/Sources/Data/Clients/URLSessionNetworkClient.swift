@@ -42,14 +42,14 @@ public actor URLSessionNetworkClient {
         session: URLSessionProtocol? = nil,
         interceptors: [RequestInterceptorProtocol] = [],
         responseHandler: ResponseHandlerProtocol = DefaultResponseHandler(),
-        requestBuilder: RequestBuilderProtocol = RequestBuilder(configuration: .live),
+        requestBuilder: RequestBuilderProtocol? = nil,
         logger: NetworkLoggerProtocol? = nil
     ) {
         self.configuration = configuration
         self.session = session ?? URLSession.shared
         self.interceptors = interceptors
         self.responseHandler = responseHandler
-        self.requestBuilder = requestBuilder
+        self.requestBuilder = requestBuilder ?? RequestBuilder(configuration: configuration)
         self.logger = logger
     }
     

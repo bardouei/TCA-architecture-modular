@@ -8,7 +8,7 @@
 import Foundation
 @testable import NetworkCore
 
-final class SpyNetworkLogger: NetworkLoggerProtocol {
+final class SpyNetworkLogger: NetworkLoggerProtocol, @unchecked Sendable {
 
     private(set) var requestStarted: [NetworkRequest] = []
     private(set) var requestDetails: [URLRequest] = []

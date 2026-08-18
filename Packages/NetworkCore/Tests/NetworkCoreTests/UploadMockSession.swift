@@ -116,7 +116,7 @@ final class UploadTests: XCTestCase {
             headers: [:]
         )
 
-        var collectedProgress: [Double] = []
+        let collectedProgress = ProgressRecorder()
 
         let req = UploadRequest(
             request: NetworkRequest(
@@ -128,10 +128,30 @@ final class UploadTests: XCTestCase {
         )
 
         _ = try await client.upload(req) { progress in
-            collectedProgress.append(Double(progress.bytesSent) / Double(progress.totalBytesExpectedToSend))
+            collectedProgress.append(
+                Double(progress.bytesSent) / Double(progress.totalBytesExpectedToSend)
+            )
         }
 
-        XCTAssertEqual(collectedProgress.count, 10)
-        XCTAssertEqual(collectedProgress.last, 1.0)
+        let values = collectedProgress.values
+        XCTAssertEqual(values.count, 10)
+        XCTAssertEqual(values.last, 1.0)
+    }
+}
+
+private final class ProgressRecorder: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [Double] = []
+
+    var values: [Double] {
+        lock.lock()
+        defer { lock.unlock() }
+        return storage
+    }
+
+    func append(_ value: Double) {
+        lock.lock()
+        defer { lock.unlock() }
+        storage.append(value)
     }
 }

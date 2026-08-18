@@ -11,16 +11,23 @@ import Foundation
 @Reducer
 public struct SplashFeature {
 
+  @Dependency(\.continuousClock) var clock
+
   public init() {}
 
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     public init() {}
   }
 
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
+    case onDisappear
     case finished
+  }
+
+  private enum CancelID {
+    case timer
   }
 
   public var body: some ReducerOf<Self> {
@@ -28,10 +35,15 @@ public struct SplashFeature {
       switch action {
 
       case .onAppear:
+        let clock = self.clock
         return .run { send in
-          try await Task.sleep(for: .seconds(2))
+          try await clock.sleep(for: .seconds(2))
           await send(.finished)
         }
+        .cancellable(id: CancelID.timer, cancelInFlight: true)
+
+      case .onDisappear:
+        return .cancel(id: CancelID.timer)
 
       case .finished:
         return .none

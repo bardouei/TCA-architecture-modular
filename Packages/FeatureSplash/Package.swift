@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureSplash",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(
             name: "FeatureSplash",
@@ -19,6 +19,13 @@ let package = Package(
         .target(
             name: "FeatureSplash",
             dependencies: [
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .testTarget(
+            name: "FeatureSplashTests",
+            dependencies: [
+                "FeatureSplash",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         )

@@ -95,7 +95,7 @@ public actor RequestQueue {
     }
     
     public func cancelAll() {
-        for (id, continuation) in continuations {
+        for (_, continuation) in continuations {
             continuation.resume(throwing: NetworkError.cancelled)
         }
         queue.removeAll()

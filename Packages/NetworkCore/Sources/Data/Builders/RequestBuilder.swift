@@ -9,27 +9,43 @@ import Foundation
 
 public actor RequestBuilder: RequestBuilderProtocol {
     
-    private let configuration: URLSessionNetworkClient.NetworkConfiguration
+    private let configuration: URLSessionNetworkClient.NetworkConfiguration?
     
     public init(
-        configuration: URLSessionNetworkClient.NetworkConfiguration
+        configuration: URLSessionNetworkClient.NetworkConfiguration? = nil
     ) {
         self.configuration = configuration
     }
     
     public func build(from request: NetworkRequest) async throws -> URLRequest {
 
-        guard let url = URL(
-            string: request.path,
-            relativeTo: configuration.baseURL
-        )?.absoluteURL else {
+        let baseURL = request.baseURL ?? configuration?.baseURL
+
+        guard let baseURL else {
+            throw NetworkError.invalidURL
+        }
+
+        guard var components = URLComponents(
+            url: URL(string: request.path, relativeTo: baseURL)?.absoluteURL ?? baseURL,
+            resolvingAgainstBaseURL: false
+        ) else {
+            throw NetworkError.invalidURL
+        }
+
+        if let queryParameters = request.queryParameters, !queryParameters.isEmpty {
+            components.queryItems = queryParameters
+                .sorted { $0.key < $1.key }
+                .map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+
+        guard let url = components.url else {
             throw NetworkError.invalidURL
         }
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
-        urlRequest.timeoutInterval = configuration.timeoutInterval
-        urlRequest.cachePolicy = configuration.cachePolicy
+        urlRequest.timeoutInterval = request.timeoutInterval
+        urlRequest.cachePolicy = request.cachePolicy
 
         request.headers.forEach {
             urlRequest.addValue($0.value, forHTTPHeaderField: $0.name)

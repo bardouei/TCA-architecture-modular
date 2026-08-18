@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "DomainCore",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(
             name: "DomainCore",

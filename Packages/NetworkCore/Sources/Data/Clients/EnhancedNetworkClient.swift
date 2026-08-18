@@ -48,6 +48,7 @@ public actor EnhancedNetworkClient {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
         urlRequest.timeoutInterval = request.timeoutInterval
+        urlRequest.cachePolicy = request.cachePolicy
         
         request.headers.forEach { header in
             urlRequest.addValue(header.value, forHTTPHeaderField: header.name)
@@ -61,6 +62,10 @@ public actor EnhancedNetworkClient {
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.invalidResponse
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw NetworkError.from(statusCode: httpResponse.statusCode, data: data)
         }
         
         return NetworkResponse(
@@ -101,14 +106,19 @@ public actor EnhancedNetworkClient {
     }
     
     private func buildURL(for request: NetworkRequest) -> URL? {
-        var components = URLComponents(url: configuration.baseURL, resolvingAgainstBaseURL: false)
-        components?.path = request.path
+        let baseURL = request.baseURL ?? configuration.baseURL
+        guard let url = URL(string: request.path, relativeTo: baseURL)?.absoluteURL else {
+            return nil
+        }
+
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         
         if let queryParams = request.queryParameters {
-            components?.queryItems = queryParams.map { URLQueryItem(name: $0.key, value: $0.value) }
+            components?.queryItems = queryParams
+                .sorted { $0.key < $1.key }
+                .map { URLQueryItem(name: $0.key, value: $0.value) }
         }
         
         return components?.url
     }
 }
-

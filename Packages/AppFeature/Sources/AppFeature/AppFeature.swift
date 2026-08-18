@@ -16,7 +16,7 @@ public struct AppFeature {
 
   // MARK: - State
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
 
     public var splash: SplashFeature.State?
     public var home: HomeFeature.State?
@@ -28,6 +28,7 @@ public struct AppFeature {
   }
 
   // MARK: - Action
+  @CasePathable
   public enum Action {
     case splash(SplashFeature.Action)
     case home(HomeFeature.Action)
@@ -42,10 +43,7 @@ public struct AppFeature {
 
       case .splash(.finished):
         state.home = .init()
-
-        return .run { send in
-          await send(.removeSplash)
-        }
+        return .send(.removeSplash)
 
       case .removeSplash:
         state.splash = nil

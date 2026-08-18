@@ -12,7 +12,7 @@ import FeatureHome
 
 public struct AppView: View {
 
-  let store: StoreOf<AppFeature>
+  @Bindable var store: StoreOf<AppFeature>
 
   public init(store: StoreOf<AppFeature>) {
     self.store = store
@@ -21,15 +21,11 @@ public struct AppView: View {
   public var body: some View {
     ZStack {
 
-      IfLetStore(
-        store.scope(state: \.splash, action: \.splash)
-      ) { splashStore in
+      if let splashStore = store.scope(state: \.splash, action: \.splash) {
         SplashView(store: splashStore)
       }
 
-      IfLetStore(
-        store.scope(state: \.home, action: \.home)
-      ) { homeStore in
+      if let homeStore = store.scope(state: \.home, action: \.home) {
         HomeView(store: homeStore)
       }
     }

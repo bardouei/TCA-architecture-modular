@@ -153,15 +153,19 @@ final class DefaultResponseHandlerTests: XCTestCase {
 
 extension XCTestCase {
 
-    func assertThrows<E: Error>(
-        _ expectedType: E,
+    func assertThrows(
+        _ expected: NetworkError,
         _ expression: @escaping () async throws -> Void,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line
     ) async {
         do {
             try await expression()
             XCTFail("Expected error but nothing thrown", file: file, line: line)
+        } catch let error as NetworkError {
+            guard error.matches(expected) else {
+                return XCTFail("Expected \(expected), got \(error)", file: file, line: line)
+            }
         } catch {
             XCTFail("Unexpected error type: \(error)", file: file, line: line)
         }
@@ -170,7 +174,7 @@ extension XCTestCase {
     func XCTAssertThrowsErrorAsync(
         _ expression: @escaping () async throws -> Void,
         onError: (Error) -> Void,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line
     ) async {
         do {
@@ -178,6 +182,20 @@ extension XCTestCase {
             XCTFail("Expected error but got none", file: file, line: line)
         } catch {
             onError(error)
+        }
+    }
+}
+
+private extension NetworkError {
+    func matches(_ other: NetworkError) -> Bool {
+        switch (self, other) {
+        case (.unauthorized, .unauthorized),
+             (.forbidden, .forbidden),
+             (.notFound, .notFound),
+             (.invalidResponse, .invalidResponse):
+            return true
+        default:
+            return false
         }
     }
 }

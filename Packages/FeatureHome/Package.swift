@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureHome",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(
             name: "FeatureHome",
@@ -22,9 +22,8 @@ let package = Package(
             from: "1.23.0"
         ),
         .package(path: "../NetworkCore"),
-        .package(path: "../StorageCore"),
         .package(path: "../DomainCore"),
-        .package(path: "../TCAAdapters")
+        .package(path: "../DesignSystem")
     ],
     targets: [
 
@@ -50,12 +49,21 @@ let package = Package(
                     package: "swift-composable-architecture"
                 ),
                 "NetworkCore",
-                "StorageCore",
                 "DomainCore",
                 "PostDetailFeature",
-                "TCAAdapters"
+                "DesignSystem"
             ],
             path: "Sources/FeatureHome"
+        ),
+        .testTarget(
+            name: "FeatureHomeTests",
+            dependencies: [
+                "FeatureHome",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                )
+            ]
         )
     ]
 )

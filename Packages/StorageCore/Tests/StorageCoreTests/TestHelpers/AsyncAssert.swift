@@ -9,7 +9,7 @@ import XCTest
 
 func XCTAssertThrowsErrorAsync(
     _ expression: @escaping () async throws -> Void,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
 ) async {
     do {

@@ -24,5 +24,8 @@ public struct SplashView: View {
     .onAppear {
       store.send(.onAppear)
     }
+    .onDisappear {
+      store.send(.onDisappear)
+    }
   }
 }

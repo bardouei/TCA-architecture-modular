@@ -6,6 +6,11 @@
 //
 
 import SwiftUI
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 public struct DarkTheme: DSTheme {
 
@@ -17,7 +22,13 @@ public struct DarkTheme: DSTheme {
     public let secondary = Color.gray
 
     public let background = Color.black
+    #if os(iOS)
     public let surface = Color(.systemGray6)
+    #elseif os(macOS)
+    public let surface = Color(nsColor: .controlBackgroundColor)
+    #else
+    public let surface = Color.gray.opacity(0.2)
+    #endif
 
     public let textPrimary = Color.white
     public let textSecondary = Color.gray

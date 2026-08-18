@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "TCAAdapters",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(
             name: "TCAAdapters",
@@ -20,8 +20,7 @@ let package = Package(
         ),
 
         // ✅ Coreها
-        .package(path: "../NetworkCore"),
-        .package(path: "../StorageCore")
+        .package(path: "../NetworkCore")
     ],
     targets: [
         .target(
@@ -31,8 +30,7 @@ let package = Package(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
                 ),
-                "NetworkCore",
-                "StorageCore"
+                "NetworkCore"
             ]
         ),
         .testTarget(

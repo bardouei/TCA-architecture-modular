@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum NetworkError: Error, Sendable {
+public enum NetworkError: LocalizedError, Sendable {
     // MARK: - Connection Errors
     case noInternetConnection
     case connectionLost
@@ -86,14 +86,24 @@ public enum NetworkError: Error, Sendable {
         switch self {
         case .noInternetConnection: return "No internet connection"
         case .connectionLost: return "Connection lost"
+        case .networkError(let error): return "Network error: \(error.localizedDescription)"
         case .dnsLookupFailed: return "DNS lookup failed"
+        case .timeout: return "The request timed out"
         case .sslError(let error): return "SSL error: \(error.localizedDescription)"
         case .certificateExpired: return "Certificate expired"
         case .certificateRevoked: return "Certificate revoked"
         case .secureConnectionFailed: return "Secure connection failed"
+        case .invalidURL: return "Invalid URL"
+        case .invalidRequest: return "Invalid request"
         case .invalidRequestBody: return "Invalid request body"
+        case .encodingError(let error): return "Encoding error: \(error.localizedDescription)"
+        case .invalidResponse: return "Invalid response"
+        case .decodingError(let error): return "Decoding error: \(error.localizedDescription)"
         case .emptyResponse: return "Empty response"
         case .badRequest: return "Bad request"
+        case .unauthorized: return "Unauthorized"
+        case .forbidden: return "Forbidden"
+        case .notFound: return "Not found"
         case .methodNotAllowed: return "Method not allowed"
         case .requestTimeout: return "Request timeout"
         case .conflict: return "Conflict"
@@ -102,13 +112,21 @@ public enum NetworkError: Error, Sendable {
         case .payloadTooLarge: return "Payload too large"
         case .uriTooLong: return "URI too long"
         case .unsupportedMediaType: return "Unsupported media type"
+        case .serverError(let statusCode, let message, _):
+            return message.map { "Server error \(statusCode): \($0)" } ?? "Server error \(statusCode)"
         case .serviceUnavailable: return "Service unavailable"
         case .gatewayTimeout: return "Gateway timeout"
+        case .rateLimited(let retryAfter):
+            return retryAfter.map { "Rate limited. Retry after \($0) seconds" } ?? "Rate limited"
         case .tooManyRedirects: return "Too many redirects"
         case .redirectLoopDetected: return "Redirect loop detected"
-        default:
-            return ""
+        case .cancelled: return "Request cancelled"
+        case .unknown: return "Unknown network error"
         }
+    }
+
+    public var errorDescription: String? {
+        localizedDescription
     }
     
     public var statusCode: Int? {

@@ -2,35 +2,62 @@
 //  MyAppClipTests.swift
 //  MyAppClipTests
 //
-//  Created by baner on 2/1/26.
-//
 
-import XCTest
+import ComposableArchitecture
+import DomainCore
 @testable import MyAppClip
+import XCTest
 
+@MainActor
 final class MyAppClipTests: XCTestCase {
+    func testOnAppearLoadsPost() async {
+        let post = EntityPost(id: 2, title: "Title", body: "Body")
+        let store = TestStore(initialState: AppClipFeature.State(postId: 2)) {
+            AppClipFeature()
+        } withDependencies: {
+            $0.appClipPostClient.fetchPost = { id in
+                XCTAssertEqual(id, 2)
+                return post
+            }
+        }
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+        await store.send(.onAppear) {
+            $0.isLoading = true
+            $0.error = nil
+        }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+        await store.receive(\.postResponse) {
+            $0.post = post
+            $0.isLoading = false
+            $0.error = nil
         }
     }
 
+    func testOnAppearStoresError() async {
+        let store = TestStore(initialState: AppClipFeature.State(postId: 2)) {
+            AppClipFeature()
+        } withDependencies: {
+            $0.appClipPostClient.fetchPost = { _ in
+                throw TestError.failed
+            }
+        }
+
+        await store.send(.onAppear) {
+            $0.isLoading = true
+            $0.error = nil
+        }
+
+        await store.receive(\.postResponse) {
+            $0.isLoading = false
+            $0.error = "Failed to load post"
+        }
+    }
+}
+
+private enum TestError: LocalizedError {
+    case failed
+
+    var errorDescription: String? {
+        "Failed to load post"
+    }
 }

@@ -5,6 +5,8 @@
 //  Created by baner on 12/12/25.
 //
 
+@testable import DomainCore
+
 final class MockUserRepository: UserRepository {
 
     var result: Result<User, Error>?

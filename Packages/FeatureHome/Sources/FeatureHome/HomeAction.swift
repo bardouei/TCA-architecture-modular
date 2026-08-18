@@ -13,7 +13,7 @@ extension HomeFeature {
     @CasePathable
     public enum Action {
         case onAppear
-        case postsLoaded([EntityPost])
+        case postsResponse(TaskResult<[EntityPost]>)
         case postTapped(EntityPost)
         case path(StackAction<Destination.State, Destination.Action>)
     }
