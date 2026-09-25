@@ -21,11 +21,8 @@ public struct SplashView: View {
       ProgressView()
       Text("Loading...")
     }
-    .onAppear {
-      store.send(.onAppear)
-    }
-    .onDisappear {
-      store.send(.onDisappear)
+    .task {
+      await store.send(.onAppear).finish()
     }
   }
 }

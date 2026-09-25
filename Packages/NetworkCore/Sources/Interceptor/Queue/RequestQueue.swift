@@ -26,7 +26,7 @@ public actor RequestQueue {
         public let createdAt: Date
         
         public init(request: NetworkRequest, priority: Priority = .medium) {
-            self.id = UUID()
+            self.id = request.id
             self.request = request
             self.priority = priority
             self.createdAt = Date()
@@ -46,7 +46,7 @@ public actor RequestQueue {
         maxConcurrentRequests: Int = 3
     ) {
         self.networkClient = networkClient
-        self.maxConcurrentRequests = maxConcurrentRequests
+        self.maxConcurrentRequests = max(1, maxConcurrentRequests)
     }
     
     public func enqueue(_ request: NetworkRequest, priority: Priority = .medium) async throws -> NetworkResponse {
@@ -57,9 +57,13 @@ public actor RequestQueue {
             return $0.createdAt < $1.createdAt
         }
         
-        return try await withCheckedThrowingContinuation { continuation in
-            continuations[queuedRequest.id] = continuation
-            processNextIfNeeded()
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                continuations[queuedRequest.id] = continuation
+                processNextIfNeeded()
+            }
+        } onCancel: {
+            Task { await self.cancelRequest(id: queuedRequest.id) }
         }
     }
     
@@ -92,6 +96,11 @@ public actor RequestQueue {
         if let task = activeTasks.removeValue(forKey: id) {
             task.cancel()
         }
+        activeRequests.remove(id)
+        if let continuation = continuations.removeValue(forKey: id) {
+            continuation.resume(throwing: NetworkError.cancelled)
+        }
+        processNextIfNeeded()
     }
     
     public func cancelAll() {
@@ -106,26 +115,23 @@ public actor RequestQueue {
     }
     
     private func processNextIfNeeded() {
-        guard activeRequests.count < maxConcurrentRequests,
-              !queue.isEmpty else {
-            return
-        }
+        while activeRequests.count < maxConcurrentRequests, !queue.isEmpty {
+            let nextRequest = queue.removeFirst()
+            activeRequests.insert(nextRequest.id)
 
-        let nextRequest = queue.removeFirst()
-        activeRequests.insert(nextRequest.id)
-
-        let task = Task { () -> NetworkResponse in
-            do {
-                let response = try await networkClient.send(nextRequest.request)
-                requestCompleted(nextRequest.id, with: .success(response))
-                return response
-            } catch {
-                requestCompleted(nextRequest.id, with: .failure(error))
-                throw error
+            let task = Task { () -> NetworkResponse in
+                do {
+                    let response = try await networkClient.send(nextRequest.request)
+                    requestCompleted(nextRequest.id, with: .success(response))
+                    return response
+                } catch {
+                    requestCompleted(nextRequest.id, with: .failure(error))
+                    throw error
+                }
             }
-        }
 
-        activeTasks[nextRequest.id] = task
+            activeTasks[nextRequest.id] = task
+        }
     }
     
     private func requestCompleted(

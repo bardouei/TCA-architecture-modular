@@ -8,8 +8,12 @@
 import SwiftUI
 
 public enum DSTypography {
-    public static let title = Font.system(size: 22, weight: .bold)
-    public static let headline = Font.system(size: 17, weight: .semibold)
-    public static let body = Font.system(size: 15)
-    public static let caption = Font.system(size: 13)
+    public static let largeTitle = Font.largeTitle.weight(.bold)
+    public static let title = Font.title2.weight(.bold)
+    public static let title3 = Font.title3.weight(.semibold)
+    public static let headline = Font.headline
+    public static let body = Font.body
+    public static let callout = Font.callout
+    public static let footnote = Font.footnote
+    public static let caption = Font.caption
 }

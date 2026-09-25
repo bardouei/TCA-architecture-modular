@@ -26,7 +26,7 @@ public struct SplashFeature {
     case finished
   }
 
-  private enum CancelID {
+  private nonisolated enum CancelID: Hashable, Sendable {
     case timer
   }
 

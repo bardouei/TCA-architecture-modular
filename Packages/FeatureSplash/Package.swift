@@ -13,20 +13,27 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.23.0")
+        .package(
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            exact: "1.26.2"
+        ),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.17.1"),
+        .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", exact: "1.13.0"),
     ],
     targets: [
         .target(
             name: "FeatureSplash",
             dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .testTarget(
             name: "FeatureSplashTests",
             dependencies: [
                 "FeatureSplash",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
             ]
         )
     ]

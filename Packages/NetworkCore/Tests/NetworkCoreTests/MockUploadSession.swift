@@ -71,7 +71,7 @@ final class NetworkClientUploadTests: XCTestCase {
         XCTAssertEqual(String(data: res.data, encoding: .utf8), "UP")
     }
     
-    func test_upload_progressHandler_calls10Steps() async throws {
+    func test_upload_progressHandler_reportsStartAndCompletion() async throws {
         let mock = MockUploadSession()
         mock.dataToReturn = Data("OK".utf8)
 
@@ -95,12 +95,7 @@ final class NetworkClientUploadTests: XCTestCase {
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("progress")
         try Data(repeating: 1, count: 1000).write(to: file)
 
-        actor Counter {
-            private(set) var value = 0
-            func inc() { value += 1 }
-        }
-
-        let counter = Counter()
+        let counter = LockedCounter()
 
         let uploadReq = UploadRequest(
             request: NetworkRequest(
@@ -111,10 +106,22 @@ final class NetworkClientUploadTests: XCTestCase {
         )
 
         _ = try await client.upload(uploadReq) { progress in
-            Task { await counter.inc() }
+            counter.increment()
         }
 
-        let final = await counter.value
-        XCTAssertEqual(final, 10)
+        XCTAssertEqual(counter.value, 2)
+    }
+}
+
+private final class LockedCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage = 0
+
+    var value: Int {
+        lock.withLock { storage }
+    }
+
+    func increment() {
+        lock.withLock { storage += 1 }
     }
 }

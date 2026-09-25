@@ -306,3 +306,66 @@ final class URLSessionNetworkClientSendTests: XCTestCase {
         }
     }
 }
+
+private actor RefreshingTokenProvider: TokenProviderProtocol {
+    private var token = "old-token"
+    private(set) var refreshCount = 0
+
+    var currentToken: String? { token }
+    func isTokenExpired(_ token: String) -> Bool { false }
+    func refreshToken() async throws -> String {
+        refreshCount += 1
+        return "new-token"
+    }
+    func updateToken(_ token: String) { self.token = token }
+}
+
+private actor UnauthorizedThenSuccessSession: URLSessionProtocol {
+    private var callCount = 0
+    private(set) var authorizationHeaders: [String] = []
+
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        callCount += 1
+        let currentCall = callCount
+        authorizationHeaders.append(request.value(forHTTPHeaderField: "Authorization") ?? "")
+        let statusCode = currentCall == 1 ? 401 : 200
+        return (
+            Data(),
+            HTTPURLResponse(
+                url: request.url!,
+                statusCode: statusCode,
+                httpVersion: nil,
+                headerFields: nil
+            )!
+        )
+    }
+
+    func download(for request: URLRequest) async throws -> (URL, URLResponse) { fatalError() }
+    func upload(for request: URLRequest, from data: Data) async throws -> (Data, URLResponse) { fatalError() }
+}
+
+extension URLSessionNetworkClientSendTests {
+    func test_send_refreshesTokenAndRetriesAfterUnauthorized() async throws {
+        let session = UnauthorizedThenSuccessSession()
+        let tokenProvider = RefreshingTokenProvider()
+        let client = URLSessionNetworkClient(
+            configuration: .init(baseURL: URL(string: "https://example.com")!, maxRetries: 1),
+            session: session,
+            interceptors: [AuthenticationInterceptor(tokenProvider: tokenProvider)],
+            responseHandler: DefaultResponseHandler(),
+            requestBuilder: RequestBuilder(),
+            logger: nil
+        )
+
+        let response = try await client.send(NetworkRequest(
+            baseURL: URL(string: "https://example.com")!,
+            path: "/protected"
+        ))
+
+        XCTAssertEqual(response.statusCode, 200)
+        let refreshCount = await tokenProvider.refreshCount
+        let authorizationHeaders = await session.authorizationHeaders
+        XCTAssertEqual(refreshCount, 1)
+        XCTAssertEqual(authorizationHeaders, ["Bearer old-token", "Bearer new-token"])
+    }
+}

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  packages:
+    name: Package tests
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - Packages/BaseCore
+          - Packages/DomainCore
+          - Packages/NetworkCore
+          - Packages/StorageCore
+          - Packages/DesignSystem
+          - Packages/TCAAdapters
+          - Packages/FeatureSplash
+          - Packages/FeatureHome
+          - Packages/AppFeature
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select --switch /Applications/Xcode.app
+      - name: Test ${{ matrix.package }}
+        run: swift test --package-path "${{ matrix.package }}"
+
+  applications:
+    name: Application build and tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select --switch /Applications/Xcode.app
+      - name: Resolve packages
+        run: xcodebuild -resolvePackageDependencies -project TCAtest.xcodeproj -scheme TCAtest
+      - name: Build and test main application
+        run: >-
+          xcodebuild test
+          -project TCAtest.xcodeproj
+          -scheme TCAtest
+          -destination 'platform=iOS Simulator,name=iPhone 17'
+          CODE_SIGNING_ALLOWED=NO
+      - name: Build App Clip
+        run: >-
+          xcodebuild build-for-testing
+          -project TCAtest.xcodeproj
+          -scheme MyAppClip
+          -destination 'platform=iOS Simulator,name=iPhone 17'
+          CODE_SIGNING_ALLOWED=NO
+      - name: Test App Clip feature without an application host
+        run: swift test --package-path Packages/AppFeature --filter AppClipFeatureTests

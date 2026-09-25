@@ -1,12 +1,20 @@
 import XCTest
-@testable import TCAAdapters
+@testable import AppDependencies
 
 final class TCAAdaptersTests: XCTestCase {
-    func testExample() throws {
-        // XCTest Documentation
-        // https://developer.apple.com/documentation/xctest
+    func testDiskCacheClientRoundTripAndRemove() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("TCAAdaptersTests.\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let client = CacheClient.disk(directory: directory)
+        let data = Data("cached".utf8)
 
-        // Defining Test Cases and Test Methods
-        // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
+        try await client.save("post/1", data)
+        let loaded = try await client.load("post/1")
+        XCTAssertEqual(loaded, data)
+
+        try await client.remove("post/1")
+        let removed = try await client.load("post/1")
+        XCTAssertNil(removed)
     }
 }

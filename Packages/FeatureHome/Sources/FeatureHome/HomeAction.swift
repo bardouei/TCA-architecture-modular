@@ -12,7 +12,10 @@ extension HomeFeature {
 
     @CasePathable
     public enum Action {
-        case onAppear
+        case task
+        case refresh
+        case retryTapped
+        case cancelLoading
         case postsResponse(TaskResult<[EntityPost]>)
         case postTapped(EntityPost)
         case path(StackAction<Destination.State, Destination.Action>)

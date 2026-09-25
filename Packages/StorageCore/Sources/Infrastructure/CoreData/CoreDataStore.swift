@@ -38,14 +38,18 @@ public actor CoreDataStore: DatabaseStore {
                     id, typeName
                 )
                 
-                let record = try context.fetch(request).first
-                ?? NSManagedObject(
-                    entity: NSEntityDescription.entity(
+                let record: NSManagedObject
+                if let existing = try context.fetch(request).first {
+                    record = existing
+                } else {
+                    guard let entity = NSEntityDescription.entity(
                         forEntityName: "CDRecord",
                         in: context
-                    )!,
-                    insertInto: context
-                )
+                    ) else {
+                        throw StorageError.underlying("CoreData entity 'CDRecord' is missing")
+                    }
+                    record = NSManagedObject(entity: entity, insertInto: context)
+                }
                 
                 record.setValue(id, forKey: "id")
                 record.setValue(typeName, forKey: "type")
@@ -109,22 +113,17 @@ public actor CoreDataStore: DatabaseStore {
         
         do {
             try await context.perform {
-                let request = NSFetchRequest<NSFetchRequestResult>(entityName: "CDRecord")
+                let request = NSFetchRequest<NSManagedObject>(entityName: "CDRecord")
                 request.predicate = NSPredicate(
                     format: "id == %@ AND type == %@",
                     id, typeName
                 )
                 
-                let batchDelete = NSBatchDeleteRequest(fetchRequest: request)
-                batchDelete.resultType = .resultTypeObjectIDs
-                
-                let result = try context.execute(batchDelete) as? NSBatchDeleteResult
-                
-                if let objectIDs = result?.result as? [NSManagedObjectID] {
-                    NSManagedObjectContext.mergeChanges(
-                        fromRemoteContextSave: [NSDeletedObjectsKey: objectIDs],
-                        into: [self.stack.container.viewContext]
-                    )
+                for record in try context.fetch(request) {
+                    context.delete(record)
+                }
+                if context.hasChanges {
+                    try context.save()
                 }
             }
         } catch {

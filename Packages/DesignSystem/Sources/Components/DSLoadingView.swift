@@ -12,9 +12,11 @@ public struct DSLoadingView: View {
     public init() {}
 
     public var body: some View {
-        ProgressView("Loading...")
+        ProgressView {
+            Text("Loading…")
+        }
             .padding()
             .background(.ultraThinMaterial)
-            .cornerRadius(DSRadius.sm)
+            .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 import FeatureSplash
 import FeatureHome
+import DesignSystem
 
 public struct AppView: View {
 
@@ -19,15 +20,26 @@ public struct AppView: View {
   }
 
   public var body: some View {
-    ZStack {
-
-      if let splashStore = store.scope(state: \.splash, action: \.splash) {
+    switch store.scope(state: \.destination, action: \.destination).case {
+      case let .splash(splashStore):
         SplashView(store: splashStore)
+      case let .home(homeStore):
+        MainContentView(homeStore: homeStore)
       }
+  }
+}
 
-      if let homeStore = store.scope(state: \.home, action: \.home) {
-        HomeView(store: homeStore)
-      }
+private struct MainContentView: View {
+  let homeStore: StoreOf<HomeFeature>
+
+  var body: some View {
+    TabView {
+      HomeView(store: homeStore)
+        .tabItem { Label("Home", systemImage: "house") }
+
+      ModuleShowcaseView()
+        .tabItem { Label("Modules", systemImage: "shippingbox") }
     }
+    .tint(DSColor.primary)
   }
 }

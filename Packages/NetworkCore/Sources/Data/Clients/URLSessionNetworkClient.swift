@@ -61,40 +61,62 @@ public actor URLSessionNetworkClient {
         logger?.logRequestStarted(request)
         
         do {
-            // Apply interceptors
-            var adaptedRequest = request
-            for interceptor in interceptors {
-                adaptedRequest = try await interceptor.adapt(adaptedRequest)
+            var retryCount = 0
+
+            while true {
+                var adaptedRequest = request
+                for interceptor in interceptors {
+                    adaptedRequest = try await interceptor.adapt(adaptedRequest)
+                }
+
+                let urlRequest = try await requestBuilder.build(from: adaptedRequest)
+                logger?.logRequestDetails(urlRequest)
+
+                let (data, response) = try await session.data(for: urlRequest)
+
+                do {
+                    let networkResponse = try await responseHandler.handle(
+                        data: data,
+                        response: response,
+                        request: adaptedRequest
+                    )
+
+                    logger?.logResponseReceived(networkResponse)
+
+                    var finalResponse = networkResponse
+                    for interceptor in interceptors {
+                        finalResponse = try await interceptor.handle(
+                            response: finalResponse,
+                            request: adaptedRequest
+                        )
+                    }
+
+                    logger?.logRequestCompleted(requestId, with: nil)
+                    return finalResponse
+                } catch {
+                    guard retryCount < configuration.maxRetries,
+                          let retryResponse = makeNetworkResponse(
+                            data: data,
+                            response: response,
+                            request: adaptedRequest
+                          ) else {
+                        throw error
+                    }
+
+                    var shouldRetry = false
+                    for interceptor in interceptors {
+                        if try await interceptor.shouldRetry(
+                            response: retryResponse,
+                            request: adaptedRequest
+                        ) {
+                            shouldRetry = true
+                        }
+                    }
+
+                    guard shouldRetry else { throw error }
+                    retryCount += 1
+                }
             }
-            
-            // Build URLRequest
-            let urlRequest = try await requestBuilder.build(from: adaptedRequest)
-            
-            logger?.logRequestDetails(urlRequest)
-            
-            // Perform request
-            let (data, response) = try await session.data(for: urlRequest)
-            
-            // Handle response
-            let networkResponse = try await responseHandler.handle(
-                data: data,
-                response: response,
-                request: adaptedRequest
-            )
-            
-            logger?.logResponseReceived(networkResponse)
-            
-            // Apply response interceptors using loop
-            var finalResponse = networkResponse
-            for interceptor in interceptors {
-                finalResponse = try await interceptor.handle(
-                    response: finalResponse,
-                    request: adaptedRequest
-                )
-            }
-            
-            logger?.logRequestCompleted(requestId, with: nil)
-            return finalResponse
             
         } catch {
             logger?.logRequestFailed(requestId, with: error)
@@ -108,7 +130,8 @@ public actor URLSessionNetworkClient {
         _ requests: [NetworkRequest],
         maxConcurrent: Int = 3
     ) async throws -> [NetworkResponse] {
-        try await withThrowingTaskGroup(of: (Int, NetworkResponse).self) { group in
+        guard maxConcurrent > 0 else { throw NetworkError.invalidRequest }
+        return try await withThrowingTaskGroup(of: (Int, NetworkResponse).self) { group in
             var results = Array<NetworkResponse?>(repeating: nil, count: requests.count)
             let initial = min(maxConcurrent, requests.count)
             for i in 0..<initial {
@@ -146,6 +169,23 @@ public actor URLSessionNetworkClient {
             
         } catch {
             logger?.logDownloadFailed(request, with: error)
+            throw mapError(error)
+        }
+    }
+
+    public func download(
+        _ request: DownloadRequest,
+        progressHandler: @escaping @Sendable (DownloadProgress) -> Void
+    ) async throws -> DownloadResponse {
+        var urlRequest = URLRequest(url: request.url)
+        urlRequest.timeoutInterval = configuration.timeoutInterval
+        request.headers.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.name) }
+
+        let delegate = DownloadTransferDelegate(request: request, progressHandler: progressHandler)
+        let transferSession = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+        do {
+            return try await delegate.start(with: transferSession, request: urlRequest)
+        } catch {
             throw mapError(error)
         }
     }
@@ -188,8 +228,7 @@ public actor URLSessionNetworkClient {
             var urlRequest = try await requestBuilder.build(from: request.request)
             urlRequest.timeoutInterval = configuration.timeoutInterval
             
-            let fileData = try Data(contentsOf: request.fileURL)
-            let (data, response) = try await session.upload(for: urlRequest, from: fileData)
+            let (data, response) = try await session.upload(for: urlRequest, fromFile: request.fileURL)
             
             let networkResponse = try await responseHandler.handle(
                 data: data,
@@ -215,27 +254,42 @@ public actor URLSessionNetworkClient {
         do {
             var urlRequest = try await requestBuilder.build(from: request.request)
             urlRequest.timeoutInterval = configuration.timeoutInterval
-            
-            let fileData = try Data(contentsOf: request.fileURL)
-            
-            // Simulate progress (in real implementation, use delegate)
-            let fileSize = fileData.count
-            let chunkSize = max(1, fileSize / 10)
-            
-            // Start upload
-            let (data, response) = try await session.upload(for: urlRequest, from: fileData)
-            
-            // Report progress
-            for i in 1...10 {
-                try await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
-                let progress = UploadProgress(
-                    request: request,
-                    bytesSent: Int64(chunkSize * i),
-                    totalBytesSent: Int64(min(chunkSize * i, fileSize)),
-                    totalBytesExpectedToSend: Int64(fileSize)
+
+            if !(session is URLSession) {
+                let fileSize = Int64(
+                    try request.fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
                 )
-                progressHandler(progress)
+                progressHandler(
+                    UploadProgress(
+                        request: request,
+                        bytesSent: 0,
+                        totalBytesSent: 0,
+                        totalBytesExpectedToSend: fileSize
+                    )
+                )
+                let (data, response) = try await session.upload(for: urlRequest, fromFile: request.fileURL)
+                progressHandler(
+                    UploadProgress(
+                        request: request,
+                        bytesSent: fileSize,
+                        totalBytesSent: fileSize,
+                        totalBytesExpectedToSend: fileSize
+                    )
+                )
+                return try await responseHandler.handle(
+                    data: data,
+                    response: response,
+                    request: request.request
+                )
             }
+
+            let delegate = UploadTransferDelegate(request: request, progressHandler: progressHandler)
+            let transferSession = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+            let (data, response) = try await delegate.start(
+                with: transferSession,
+                urlRequest: urlRequest,
+                fileURL: request.fileURL
+            )
             
             let networkResponse = try await responseHandler.handle(
                 data: data,
@@ -290,6 +344,23 @@ public actor URLSessionNetworkClient {
         if error is DecodingError { return .decodingError(error) }
         if error is EncodingError { return .encodingError(error) }
         return .unknown
+    }
+
+    private func makeNetworkResponse(
+        data: Data,
+        response: URLResponse,
+        request: NetworkRequest
+    ) -> NetworkResponse? {
+        guard let httpResponse = response as? HTTPURLResponse else { return nil }
+        let headers = httpResponse.allHeaderFields.reduce(into: [String: String]()) { result, entry in
+            result[String(describing: entry.key).lowercased()] = String(describing: entry.value)
+        }
+        return NetworkResponse(
+            request: request,
+            statusCode: httpResponse.statusCode,
+            data: data,
+            headers: headers
+        )
     }
 }
 

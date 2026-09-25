@@ -7,6 +7,7 @@ import ComposableArchitecture
 import DomainCore
 import Foundation
 import NetworkCore
+import AppDependencies
 
 public struct PostsClient: Sendable {
     public var fetchPosts: @Sendable () async throws -> [EntityPost]
@@ -18,7 +19,8 @@ public struct PostsClient: Sendable {
 
 private enum PostsClientKey: DependencyKey {
     static let liveValue = PostsClient {
-        let response = try await AnyNetworkClient.live.send(
+        @Dependency(\.networkClient) var networkClient
+        let response = try await networkClient.send(
             NetworkRequest(path: "/posts")
         )
 

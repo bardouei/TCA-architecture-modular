@@ -139,7 +139,33 @@ final class RequestQueueTests: XCTestCase {
         _ = try await [r0, r1, r2, r3, r4, r5]
 
         let maxObserved = await observer.maxActive
-        XCTAssertLessThanOrEqual(maxObserved, maxConcurrent)
+        XCTAssertEqual(maxObserved, maxConcurrent)
+    }
+
+    func test_cancelRequest_resumesActiveRequestWithCancellation() async {
+        let observer = ConcurrencyObserver()
+        let session = SlowMockSession(observer: observer, delayNanoseconds: 2_000_000_000)
+        let client = makeClient(using: session)
+        let queue = RequestQueue(networkClient: client, maxConcurrentRequests: 1)
+        let request = NetworkRequest(baseURL: URL(string: "https://example.com")!, path: "/cancel")
+
+        let task = Task { try await queue.enqueue(request) }
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        await queue.cancelRequest(id: request.id)
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected cancellation")
+        } catch let error as NetworkError {
+            guard case .cancelled = error else {
+                return XCTFail("Expected .cancelled, got \(error)")
+            }
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+
+        let active = await queue.activeCount
+        XCTAssertEqual(active, 0)
     }
 
     func test_enqueue_respectsPriorityOrderForQueuedItems() async throws {

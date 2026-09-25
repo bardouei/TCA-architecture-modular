@@ -18,46 +18,42 @@ public struct AppFeature {
   @ObservableState
   public struct State: Equatable {
 
-    public var splash: SplashFeature.State?
-    public var home: HomeFeature.State?
+    public var destination: Destination.State
 
     public init() {
-      self.splash = .init()
-      self.home = nil
+      self.destination = .splash(.init())
     }
+  }
+
+  @Reducer
+  public enum Destination {
+    case splash(SplashFeature)
+    case home(HomeFeature)
   }
 
   // MARK: - Action
   @CasePathable
   public enum Action {
-    case splash(SplashFeature.Action)
-    case home(HomeFeature.Action)
-    case removeSplash
+    case destination(Destination.Action)
   }
 
   // MARK: - Reducer
   public var body: some ReducerOf<Self> {
-
+    Scope(state: \.destination, action: \.destination) {
+      Destination.body
+    }
     Reduce { state, action in
       switch action {
 
-      case .splash(.finished):
-        state.home = .init()
-        return .send(.removeSplash)
-
-      case .removeSplash:
-        state.splash = nil
+      case .destination(.splash(.finished)):
+        state.destination = .home(.init())
         return .none
 
-      case .splash, .home:
+      case .destination:
         return .none
       }
     }
-    .ifLet(\.splash, action: \.splash) {
-      SplashFeature()
-    }
-    .ifLet(\.home, action: \.home) {
-      HomeFeature()
-    }
   }
 }
+
+extension AppFeature.Destination.State: Equatable {}

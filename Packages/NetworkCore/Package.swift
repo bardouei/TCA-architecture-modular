@@ -10,7 +10,7 @@ let package = Package(
         .library(
             name: "NetworkCore",
             targets: ["NetworkCore"]
-        ),
+        ), 
     ],
     targets: [
         .target(

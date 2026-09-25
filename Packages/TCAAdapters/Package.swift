@@ -8,34 +8,48 @@ let package = Package(
     platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(
+            name: "AppDependencies",
+            targets: ["AppDependencies"]
+        ),
+        .library(
             name: "TCAAdapters",
-            targets: ["TCAAdapters"]
+            targets: ["AppDependencies"]
         ),
     ],
     dependencies: [
         // ✅ TCA
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "1.23.0"
+            exact: "1.26.2"
         ),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.17.1"),
+        .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", exact: "1.13.0"),
 
         // ✅ Coreها
-        .package(path: "../NetworkCore")
+        .package(path: "../NetworkCore"),
+        .package(path: "../StorageCore")
     ],
     targets: [
         .target(
-            name: "TCAAdapters",
+            name: "AppDependencies",
             dependencies: [
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
                 ),
-                "NetworkCore"
-            ]
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "NetworkCore",
+                "StorageCore"
+            ],
+            path: "Sources"
         ),
         .testTarget(
             name: "TCAAdaptersTests",
-            dependencies: ["TCAAdapters"]
+            dependencies: [
+                "AppDependencies",
+                .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
+            ],
+            path: "Tests/TCAAdaptersTests"
         ),
     ]
 )

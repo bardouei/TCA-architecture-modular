@@ -12,17 +12,25 @@ public final class CoreDataStack: @unchecked Sendable {
 
     public let container: NSPersistentContainer
 
-    public init(modelName: String, inMemory: Bool = false) {
-        container = NSPersistentContainer(name: modelName)
+    public init(modelName: String, inMemory: Bool = false) async throws {
+        guard let modelURL = Bundle.module.url(forResource: modelName, withExtension: "momd"),
+              let model = NSManagedObjectModel(contentsOf: modelURL) else {
+            throw StorageError.underlying("CoreData model '\(modelName)' was not found in StorageCore resources")
+        }
+        container = NSPersistentContainer(name: modelName, managedObjectModel: model)
 
         if inMemory {
             container.persistentStoreDescriptions.first?.url =
                 URL(fileURLWithPath: "/dev/null")
         }
 
-        container.loadPersistentStores { _, error in
-            if let error {
-                fatalError("CoreData load error: \(error)")
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            container.loadPersistentStores { _, error in
+                if let error {
+                    continuation.resume(throwing: StorageError.underlying("CoreData load failed: \(error)"))
+                } else {
+                    continuation.resume()
+                }
             }
         }
 

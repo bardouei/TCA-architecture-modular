@@ -10,11 +10,17 @@ import DomainCore
 
 extension HomeFeature {
 
+    public enum LoadFailure: Equatable, Sendable {
+        case connection
+        case invalidData
+        case unavailable
+    }
+
     @ObservableState
     public struct State: Equatable {
         public var posts: [EntityPost] = []
         public var isLoading: Bool = false
-        public var error: String?
+        public var failure: LoadFailure?
         public var path = StackState<Destination.State>()
 
         public init() {}

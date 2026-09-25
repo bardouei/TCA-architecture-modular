@@ -6,21 +6,21 @@
 @testable import AppFeature
 import ComposableArchitecture
 import FeatureHome
-import XCTest
+import Testing
 
-@MainActor
-final class AppFeatureTests: XCTestCase {
-    func testSplashFinishedShowsHomeAndRemovesSplash() async {
+struct AppFeatureTests {
+    @Test func `Splash completion transitions atomically to home`() async {
+        await splashCompletionTransitionsAtomicallyToHome()
+    }
+
+    @MainActor
+    private func splashCompletionTransitionsAtomicallyToHome() async {
         let store = TestStore(initialState: AppFeature.State()) {
             AppFeature()
         }
 
-        await store.send(.splash(.finished)) {
-            $0.home = HomeFeature.State()
-        }
-
-        await store.receive(\.removeSplash) {
-            $0.splash = nil
+        await store.send(.destination(.splash(.finished))) {
+            $0.destination = .home(HomeFeature.State())
         }
     }
 }

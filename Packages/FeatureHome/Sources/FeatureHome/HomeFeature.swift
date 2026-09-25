@@ -9,6 +9,7 @@ import Foundation
 import DomainCore
 import PostDetailFeature
 import ComposableArchitecture
+import NetworkCore
 
 @Reducer
 public struct HomeFeature {
@@ -25,16 +26,16 @@ public struct HomeFeature {
 
 extension HomeFeature {
 
-    private enum CancelID {
+    private nonisolated enum CancelID: Hashable, Sendable {
         case loadPosts
     }
     
     func core(state: inout State, action: Action) -> Effect<Action> {
         switch action {
             
-        case .onAppear:
+        case .task, .refresh, .retryTapped:
             state.isLoading = true
-            state.error = nil
+            state.failure = nil
             let postsClient = self.postsClient
             
             return .run { send in
@@ -47,13 +48,17 @@ extension HomeFeature {
         case let .postsResponse(.success(posts)):
             state.isLoading = false
             state.posts = posts
-            state.error = nil
+            state.failure = nil
             return .none
 
         case let .postsResponse(.failure(error)):
             state.isLoading = false
-            state.error = error.localizedDescription
+            state.failure = loadFailure(for: error)
             return .none
+
+        case .cancelLoading:
+            state.isLoading = false
+            return .cancel(id: CancelID.loadPosts)
             
         case let .postTapped(post):
             state.path.append(
@@ -66,5 +71,11 @@ extension HomeFeature {
         case .path:
             return .none
         }
+    }
+
+    private func loadFailure(for error: Error) -> LoadFailure {
+        if error is DecodingError { return .invalidData }
+        guard let networkError = error as? NetworkError else { return .unavailable }
+        return networkError.isConnectionError ? .connection : .unavailable
     }
 }

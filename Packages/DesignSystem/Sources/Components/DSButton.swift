@@ -8,27 +8,65 @@
 import SwiftUI
 
 public struct DSButton: View {
-    
-    let title: String
-    let action: () -> Void
-    
+
+    public enum Style: Sendable, Equatable {
+        case primary
+        case secondary
+        case destructive
+    }
+
+    private let title: String
+    private let systemImage: String?
+    private let style: Style
+    private let isLoading: Bool
+    private let action: () -> Void
+
     public init(
         _ title: String,
+        systemImage: String? = nil,
+        style: Style = .primary,
+        isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
+        self.systemImage = systemImage
+        self.style = style
+        self.isLoading = isLoading
         self.action = action
     }
-    
+
     public var body: some View {
         Button(action: action) {
-            Text(title)
+            HStack(spacing: DSSpacing.sm) {
+                if isLoading {
+                    ProgressView()
+                        .tint(foregroundColor)
+                } else if let systemImage {
+                    Image(systemName: systemImage)
+                }
+                Text(title)
+            }
                 .font(DSTypography.headline)
-                .foregroundColor(.white)
+                .foregroundStyle(foregroundColor)
                 .frame(maxWidth: .infinity)
-                .padding()
-                .background(DSColor.primary)
-                .cornerRadius(DSRadius.md)
+                .padding(.horizontal, DSSpacing.md)
+                .padding(.vertical, DSSpacing.sm + 4)
+                .background(backgroundColor)
+                .clipShape(RoundedRectangle(cornerRadius: DSRadius.md))
         }
+        .disabled(isLoading)
+        .accessibilityLabel(title)
+    }
+
+    private var backgroundColor: Color {
+        switch style {
+        case .primary: DSColor.primary
+        case .secondary: DSColor.surface
+        case .destructive: DSColor.error
+        }
+    }
+
+    private var foregroundColor: Color {
+        style == .secondary ? DSColor.textPrimary : .white
     }
 }

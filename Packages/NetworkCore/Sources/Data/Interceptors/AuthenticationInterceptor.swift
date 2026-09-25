@@ -9,7 +9,6 @@ import Foundation
 
 public actor AuthenticationInterceptor: RequestInterceptorProtocol {
     private let tokenProvider: TokenProviderProtocol
-    private var isRefreshing = false
     private var refreshTask: Task<String, Error>?
     
     public init(tokenProvider: TokenProviderProtocol) {
@@ -36,13 +35,13 @@ public actor AuthenticationInterceptor: RequestInterceptorProtocol {
     }
     
     public func handle(response: NetworkResponse, request: NetworkRequest) async throws -> NetworkResponse {
-        if response.statusCode == 401 {
-            // Token expired, refresh and retry
-            _ = try await refreshToken()
-            throw NetworkError.unauthorized
-        }
-        
         return response
+    }
+
+    public func shouldRetry(response: NetworkResponse, request: NetworkRequest) async throws -> Bool {
+        guard response.statusCode == 401 else { return false }
+        _ = try await refreshToken()
+        return true
     }
     
     private func getValidToken() async throws -> String {

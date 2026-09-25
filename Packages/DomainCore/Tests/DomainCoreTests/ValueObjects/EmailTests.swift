@@ -20,4 +20,15 @@ final class EmailTests: XCTestCase {
             XCTAssertEqual(error as? DomainError, .invalidEmail)
         }
     }
+
+    func test_emailIsTrimmedAndNormalized() throws {
+        let email = try Email("  TEST@Example.COM  ")
+        XCTAssertEqual(email.value, "test@example.com")
+    }
+
+    func test_invalidEmailShapesThrow() {
+        for value in ["@example.com", "test@", "test@@example.com", "test@.com", "test@example."] {
+            XCTAssertThrowsError(try Email(value), "Expected \(value) to be invalid")
+        }
+    }
 }

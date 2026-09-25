@@ -134,8 +134,7 @@ final class UploadTests: XCTestCase {
         }
 
         let values = collectedProgress.values
-        XCTAssertEqual(values.count, 10)
-        XCTAssertEqual(values.last, 1.0)
+        XCTAssertEqual(values, [0.0, 1.0])
     }
 }
 

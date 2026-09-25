@@ -47,32 +47,35 @@ public actor UserDefaultsStore: KeyValueStore {
         _ type: T.Type,
         for key: StorageKey
     ) async throws -> T {
+        guard let storedValue = defaults.object(forKey: key.rawValue) else {
+            throw StorageError.notFound
+        }
 
         if T.self == String.self,
-           let v = defaults.string(forKey: key.rawValue) as? T {
+           let v = storedValue as? T {
             return v
         }
 
-        if T.self == Int.self {
-            return defaults.integer(forKey: key.rawValue) as! T
+        if T.self == Int.self, let value = storedValue as? Int, let typed = value as? T {
+            return typed
         }
 
-        if T.self == Bool.self {
-            return defaults.bool(forKey: key.rawValue) as! T
+        if T.self == Bool.self, let value = storedValue as? Bool, let typed = value as? T {
+            return typed
         }
 
-        if T.self == Double.self {
-            return defaults.double(forKey: key.rawValue) as! T
+        if T.self == Double.self, let value = storedValue as? Double, let typed = value as? T {
+            return typed
         }
 
-        guard let data = defaults.data(forKey: key.rawValue) else {
-            throw StorageError.notFound
+        guard let data = storedValue as? Data else {
+            throw StorageError.decoding
         }
 
         do {
             return try decoder.decode(T.self, from: data)
         } catch {
-            throw StorageError.encoding
+            throw StorageError.decoding
         }
     }
 

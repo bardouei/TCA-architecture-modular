@@ -7,17 +7,26 @@
 
 import Foundation
 
-public struct Email: Equatable {
+public struct Email: Codable, Equatable, Hashable, Sendable {
     public let value: String
 
     public init(_ value: String) throws {
-        guard Email.isValid(value) else {
+        let normalizedValue = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard Email.isValid(normalizedValue) else {
             throw DomainError.invalidEmail
         }
-        self.value = value
+        self.value = normalizedValue
     }
 
     private static func isValid(_ email: String) -> Bool {
-        email.contains("@") && email.contains(".")
+        let parts = email.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2,
+              !parts[0].isEmpty,
+              !parts[1].isEmpty,
+              !parts[1].hasPrefix("."),
+              !parts[1].hasSuffix(".") else {
+            return false
+        }
+        return parts[1].contains(".")
     }
 }

@@ -7,17 +7,18 @@
 
 import SwiftUI
 import ComposableArchitecture
+import AppClipFeature
 
 @main
 struct AppClipApp: App {
+    private let store = Store(
+        initialState: AppClipFeature.State(postId: 2),
+        reducer: { AppClipFeature() }
+    )
+
     var body: some Scene {
         WindowGroup {
-            AppClipView(
-                store: Store(
-                    initialState: AppClipFeature.State(postId: 2),
-                    reducer: { AppClipFeature() }
-                )
-            )
+            AppClipView(store: store)
         }
     }
 }
