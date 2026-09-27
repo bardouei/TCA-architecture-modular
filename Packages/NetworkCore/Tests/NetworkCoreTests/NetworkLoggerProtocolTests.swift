@@ -91,4 +91,26 @@ final class NetworkLoggerProtocolTests: XCTestCase {
         XCTAssertEqual(logger.uploadCompleted.count, 1)
         XCTAssertEqual(logger.uploadFailed.count, 1)
     }
+
+    func test_sensitiveHeadersAreRedacted() {
+        let result = NetworkLogSanitizer.headers([
+            "Authorization": "Bearer secret",
+            "Cookie": "session=secret",
+            "Content-Type": "application/json"
+        ])
+
+        XCTAssertEqual(result["Authorization"], "<redacted>")
+        XCTAssertEqual(result["Cookie"], "<redacted>")
+        XCTAssertEqual(result["Content-Type"], "application/json")
+    }
+
+    func test_urlQueryAndBodyContentsAreNotLogged() {
+        let url = URL(string: "https://example.com/items?token=secret")!
+
+        XCTAssertFalse(NetworkLogSanitizer.url(url).contains("secret"))
+        XCTAssertEqual(
+            NetworkLogSanitizer.bodyDescription(Data("secret".utf8)),
+            "<6 bytes; payload logging disabled>"
+        )
+    }
 }

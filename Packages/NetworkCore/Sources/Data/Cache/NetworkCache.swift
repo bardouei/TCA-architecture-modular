@@ -50,7 +50,7 @@ public actor NetworkCache {
     public func store(
         _ response: NetworkResponse,
         for request: NetworkRequest,
-        policy: CachePolicy = .memoryAndDisk
+        policy: CachePolicy = .memoryOnly
     ) async {
         guard policy != .noCache else { return }
 
@@ -72,7 +72,10 @@ public actor NetworkCache {
                 at: fileURL.deletingLastPathComponent(),
                 withIntermediateDirectories: true
             )
-            try encoded.write(to: fileURL, options: .atomic)
+            try encoded.write(
+                to: fileURL,
+                options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]
+            )
         }.value
     }
 

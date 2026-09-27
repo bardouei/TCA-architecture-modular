@@ -1,6 +1,6 @@
 //
 //  SplashFeatureTests.swift
-//  FeatureSplash
+//  AppFeature
 //
 
 import ComposableArchitecture

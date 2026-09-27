@@ -18,14 +18,14 @@ let package = Package(
         .package(path: "../StorageCore"),
         .package(path: "../DesignSystem"),
         .package(path: "../DomainCore"),
-        .package(path: "../TCAAdapters")
+        .package(path: "../AppDependencies")
     ],
     targets: [
         .target(
             name: "AppFeature",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "AppDependencies", package: "TCAAdapters"),
+                .product(name: "AppDependencies", package: "AppDependencies"),
                 "NetworkCore",
                 "StorageCore",
                 "DesignSystem",

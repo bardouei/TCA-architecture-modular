@@ -1,6 +1,6 @@
 //
 //  HomeFeatureTests.swift
-//  FeatureHome
+//  AppFeature
 //
 
 import ComposableArchitecture
@@ -75,7 +75,7 @@ struct HomeFeatureTests {
         }
 
         await store.send(.postTapped(post)) {
-            $0.path.append(.postDetail(PostDetailFeature.State(post: post)))
+            $0.path.append(.postDetail(PostDetail.State(post: post)))
         }
     }
 }

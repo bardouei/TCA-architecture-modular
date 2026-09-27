@@ -1,6 +1,6 @@
 //
 //  HomeState.swift
-//  FeatureHome
+//  AppFeature
 //
 //  Created by baner on 1/3/26.
 //

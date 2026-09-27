@@ -1,20 +1,6 @@
-//
-//  CacheService.swift
-//  StorageCore
-//
-//  Created by baner on 12/13/25.
-//
-
 import Foundation
 
-public protocol CacheService: Sendable {
-    func load(_ key: String) async throws -> Data?
-    func save(_ key: String, _ data: Data) async throws
-    func remove(_ key: String) async throws
-}
-
 public actor DiskCache: CacheService {
-
     private let directory: URL
     private let logger: StorageLoggerProtocol
 
@@ -31,20 +17,24 @@ public actor DiskCache: CacheService {
     public func load(_ key: String) async throws -> Data? {
         let url = try fileURL(for: key)
         let data: Data?
+
         do {
-            data = try await Task.detached { try Data(contentsOf: url) }.value
+            data = try await Task.detached {
+                try Data(contentsOf: url)
+            }.value
         } catch let error as CocoaError where error.code == .fileReadNoSuchFile {
             data = nil
         } catch {
             throw StorageError.underlying("Disk cache read failed: \(error)")
         }
-        logger.logRead(key: key, hit: data != nil)
 
+        logger.logRead(key: key, hit: data != nil)
         return data
     }
 
     public func save(_ key: String, _ data: Data) async throws {
         let url = try fileURL(for: key)
+
         do {
             try await Task.detached {
                 try FileManager.default.createDirectory(
@@ -61,6 +51,7 @@ public actor DiskCache: CacheService {
 
     public func remove(_ key: String) async throws {
         let url = try fileURL(for: key)
+
         do {
             try await Task.detached {
                 guard FileManager.default.fileExists(atPath: url.path) else { return }
@@ -69,15 +60,21 @@ public actor DiskCache: CacheService {
         } catch {
             throw StorageError.underlying("Disk cache remove failed: \(error)")
         }
+
         logger.logRemove(key: key)
     }
 
     private func fileURL(for key: String) throws -> URL {
-        guard !key.isEmpty else { throw StorageError.invalidKey }
-        let encoded = Data(key.utf8).base64EncodedString()
+        guard !key.isEmpty else {
+            throw StorageError.invalidKey
+        }
+
+        let encoded = Data(key.utf8)
+            .base64EncodedString()
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "=", with: "")
+
         return directory.appendingPathComponent(encoded, isDirectory: false)
     }
 }

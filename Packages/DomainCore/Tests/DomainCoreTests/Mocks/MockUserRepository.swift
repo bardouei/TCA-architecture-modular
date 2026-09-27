@@ -7,14 +7,27 @@
 
 @testable import DomainCore
 
-final class MockUserRepository: UserRepository {
+actor MockUserRepository: UserRepository {
+    enum Result: Sendable {
+        case success(User)
+        case failure(DomainError)
+    }
 
-    var result: Result<User, Error>?
+    private var result: Result?
+
+    func setResult(_ result: Result) {
+        self.result = result
+    }
 
     func getUser(id: String) async throws -> User {
         guard let result else {
-            fatalError("Result not set")
+            throw DomainError.userNotFound
         }
-        return try result.get()
+        switch result {
+        case let .success(user):
+            return user
+        case let .failure(error):
+            throw error
+        }
     }
 }

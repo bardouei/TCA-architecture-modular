@@ -1,6 +1,6 @@
 //
 //  SplashFeature.swift
-//  FeatureSplash
+//  AppFeature
 //
 //  Created by baner on 12/12/25.
 //

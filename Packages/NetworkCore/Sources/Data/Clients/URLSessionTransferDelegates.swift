@@ -1,11 +1,15 @@
+import BaseCore
 import Foundation
 
 final class DownloadTransferDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     private let request: DownloadRequest
     private let progressHandler: @Sendable (DownloadProgress) -> Void
-    private let lock = NSLock()
-    private var continuation: CheckedContinuation<DownloadResponse, Error>?
-    private var completed = false
+    private struct State {
+        var continuation: CheckedContinuation<DownloadResponse, Error>?
+        var isCompleted = false
+    }
+
+    private let state = LockIsolated(State())
 
     init(
         request: DownloadRequest,
@@ -18,7 +22,7 @@ final class DownloadTransferDelegate: NSObject, URLSessionDownloadDelegate, @unc
     func start(with session: URLSession, request urlRequest: URLRequest) async throws -> DownloadResponse {
         try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
-                lock.withLock { self.continuation = continuation }
+                state.withValue { $0.continuation = continuation }
                 session.downloadTask(with: urlRequest).resume()
             }
         } onCancel: {
@@ -78,15 +82,18 @@ final class DownloadTransferDelegate: NSObject, URLSessionDownloadDelegate, @unc
         task: URLSessionTask,
         didCompleteWithError error: Error?
     ) {
-        if let error { finish(.failure(error)) }
+        if let error {
+            finish(.failure(error))
+            session.finishTasksAndInvalidate()
+        }
     }
 
     private func finish(_ result: Result<DownloadResponse, Error>) {
-        let continuation: CheckedContinuation<DownloadResponse, Error>? = lock.withLock {
-            guard !completed else { return nil }
-            completed = true
-            defer { self.continuation = nil }
-            return self.continuation
+        let continuation: CheckedContinuation<DownloadResponse, Error>? = state.withValue {
+            guard !$0.isCompleted else { return nil }
+            $0.isCompleted = true
+            defer { $0.continuation = nil }
+            return $0.continuation
         }
         continuation?.resume(with: result)
     }
@@ -95,10 +102,13 @@ final class DownloadTransferDelegate: NSObject, URLSessionDownloadDelegate, @unc
 final class UploadTransferDelegate: NSObject, URLSessionDataDelegate, @unchecked Sendable {
     private let request: UploadRequest
     private let progressHandler: @Sendable (UploadProgress) -> Void
-    private let lock = NSLock()
-    private var responseData = Data()
-    private var continuation: CheckedContinuation<(Data, URLResponse), Error>?
-    private var completed = false
+    private struct State {
+        var responseData = Data()
+        var continuation: CheckedContinuation<(Data, URLResponse), Error>?
+        var isCompleted = false
+    }
+
+    private let state = LockIsolated(State())
 
     init(
         request: UploadRequest,
@@ -115,7 +125,7 @@ final class UploadTransferDelegate: NSObject, URLSessionDataDelegate, @unchecked
     ) async throws -> (Data, URLResponse) {
         try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
-                lock.withLock { self.continuation = continuation }
+                state.withValue { $0.continuation = continuation }
                 session.uploadTask(with: urlRequest, fromFile: fileURL).resume()
             }
         } onCancel: {
@@ -145,7 +155,7 @@ final class UploadTransferDelegate: NSObject, URLSessionDataDelegate, @unchecked
         dataTask: URLSessionDataTask,
         didReceive data: Data
     ) {
-        lock.withLock { responseData.append(data) }
+        state.withValue { $0.responseData.append(data) }
     }
 
     func urlSession(
@@ -156,7 +166,7 @@ final class UploadTransferDelegate: NSObject, URLSessionDataDelegate, @unchecked
         if let error {
             finish(.failure(error))
         } else if let response = task.response {
-            let data = lock.withLock { responseData }
+            let data = state.withValue { $0.responseData }
             finish(.success((data, response)))
         } else {
             finish(.failure(NetworkError.invalidResponse))
@@ -165,11 +175,11 @@ final class UploadTransferDelegate: NSObject, URLSessionDataDelegate, @unchecked
     }
 
     private func finish(_ result: Result<(Data, URLResponse), Error>) {
-        let continuation: CheckedContinuation<(Data, URLResponse), Error>? = lock.withLock {
-            guard !completed else { return nil }
-            completed = true
-            defer { self.continuation = nil }
-            return self.continuation
+        let continuation: CheckedContinuation<(Data, URLResponse), Error>? = state.withValue {
+            guard !$0.isCompleted else { return nil }
+            $0.isCompleted = true
+            defer { $0.continuation = nil }
+            return $0.continuation
         }
         continuation?.resume(with: result)
     }

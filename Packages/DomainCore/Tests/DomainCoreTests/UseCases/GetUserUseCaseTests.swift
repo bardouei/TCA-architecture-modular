@@ -27,7 +27,7 @@ final class GetUserUseCaseTests: XCTestCase {
             email: email
         )
 
-        repository.result = .success(expectedUser)
+        await repository.setResult(.success(expectedUser))
 
         let user = try await useCase.execute(userId: "1")
 
@@ -44,7 +44,7 @@ final class GetUserUseCaseTests: XCTestCase {
     }
 
     func test_execute_propagatesRepositoryError() async {
-        repository.result = .failure(DomainError.userNotFound)
+        await repository.setResult(.failure(.userNotFound))
 
         do {
             _ = try await useCase.execute(userId: "404")

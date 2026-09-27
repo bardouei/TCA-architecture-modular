@@ -1,6 +1,6 @@
 //
 //  PostsClient.swift
-//  FeatureHome
+//  AppFeature
 //
 
 import ComposableArchitecture

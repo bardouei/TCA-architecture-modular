@@ -1,6 +1,6 @@
 //
 //  PostDetailView.swift
-//  FeatureHome
+//  AppFeature
 //
 //  Created by baner on 12/17/25.
 //
@@ -10,9 +10,9 @@ import ComposableArchitecture
 
 public struct PostDetailView: View {
 
-    let store: StoreOf<PostDetailFeature>
+    let store: StoreOf<PostDetail>
 
-    public init(store: StoreOf<PostDetailFeature>) {
+    public init(store: StoreOf<PostDetail>) {
         self.store = store
     }
 

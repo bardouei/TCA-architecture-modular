@@ -1,6 +1,6 @@
 //
 //  HomeDestination.swift
-//  FeatureHome
+//  AppFeature
 //
 //  Created by baner on 1/3/26.
 //
@@ -11,7 +11,7 @@ extension HomeFeature {
 
     @Reducer
     public enum Destination {
-        case postDetail(PostDetailFeature)
+        case postDetail(PostDetail)
     }
 }
 

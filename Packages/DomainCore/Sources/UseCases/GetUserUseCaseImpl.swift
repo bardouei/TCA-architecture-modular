@@ -5,7 +5,7 @@
 //  Created by baner on 12/12/25.
 //
 
-public final class GetUserUseCaseImpl: GetUserUseCase {
+public final class GetUserUseCaseImpl: GetUserUseCase, Sendable {
 
     private let repository: UserRepository
 

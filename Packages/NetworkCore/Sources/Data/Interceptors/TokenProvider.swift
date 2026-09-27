@@ -1,10 +1,3 @@
-//
-//  TokenProvider.swift
-//  Networking
-//
-//  Created by baner on 12/10/25.
-//
-
 import Foundation
 
 public protocol TokenProviderProtocol: Actor {
@@ -15,36 +8,41 @@ public protocol TokenProviderProtocol: Actor {
 }
 
 public actor InMemoryTokenProvider: TokenProviderProtocol {
+    public typealias RefreshOperation = @Sendable () async throws -> String
+
     private var token: String?
     private var expirationDate: Date?
-    
+    private let tokenLifetime: TimeInterval
+    private let refreshOperation: RefreshOperation
+
     public var currentToken: String? {
         token
     }
-    
-    public init(initialToken: String? = nil, expirationDate: Date? = nil) {
+
+    public init(
+        initialToken: String? = nil,
+        expirationDate: Date? = nil,
+        tokenLifetime: TimeInterval = 3_600,
+        refreshOperation: @escaping RefreshOperation
+    ) {
         self.token = initialToken
         self.expirationDate = expirationDate
+        self.tokenLifetime = tokenLifetime
+        self.refreshOperation = refreshOperation
     }
-    
+
     public func isTokenExpired(_ token: String) -> Bool {
-        guard let expirationDate = expirationDate else { return true }
-        return Date() > expirationDate
+        guard token == self.token, let expirationDate else { return true }
+        return Date() >= expirationDate
     }
-    
+
     public func refreshToken() async throws -> String {
-        // Implement your token refresh logic here
-        // This is just a placeholder implementation
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-        
-        let newToken = "refreshed_token_\(UUID().uuidString)"
-        expirationDate = Date().addingTimeInterval(3600) // Expires in 1 hour
-        
-        return newToken
+        try Task.checkCancellation()
+        return try await refreshOperation()
     }
-    
+
     public func updateToken(_ token: String) {
         self.token = token
-        self.expirationDate = Date().addingTimeInterval(3600) // Expires in 1 hour
+        expirationDate = Date().addingTimeInterval(tokenLifetime)
     }
 }

@@ -9,8 +9,8 @@ import SwiftUI
 
 public struct DSEmptyStateView: View {
     
-    let title: LocalizedStringResource
-    let description: LocalizedStringResource
+    private let title: LocalizedStringResource
+    private let description: LocalizedStringResource
     
     public init(
         title: LocalizedStringResource,
@@ -24,14 +24,14 @@ public struct DSEmptyStateView: View {
         VStack(spacing: DSSpacing.md) {
             Image(systemName: "tray")
                 .font(.largeTitle)
-                .foregroundColor(DSColor.secondary)
+                .foregroundStyle(DSColor.secondary)
             
             Text(title)
                 .font(DSTypography.headline)
             
             Text(description)
                 .font(DSTypography.body)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
         .padding()
     }

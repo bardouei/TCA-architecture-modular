@@ -1,6 +1,6 @@
 //
 //  Post.swift
-//  FeatureHome
+//  DomainCore
 //
 //  Created by baner on 12/13/25.
 //

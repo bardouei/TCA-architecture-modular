@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class StorageFacade: StorageFacadeProtocol, @unchecked Sendable {
+public final class StorageFacade: StorageFacadeProtocol {
 
     public let preferences: KeyValueStore
     public let secure: SecureStore

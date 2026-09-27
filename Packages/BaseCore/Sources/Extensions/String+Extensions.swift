@@ -8,10 +8,6 @@
 import Foundation
 
 public extension String {
-    var isNotEmpty: Bool {
-        !isEmpty
-    }
-
     func trimmed() -> String {
         trimmingCharacters(in: .whitespacesAndNewlines)
     }

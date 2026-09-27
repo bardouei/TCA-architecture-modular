@@ -1,8 +1,12 @@
+//
+//  LockIsolated.swift
+//  BaseCore
+//
+//  Created by baner on 12/12/25.
+//
+
 import Foundation
 
-/// Protects mutable value state behind one lock.
-///
-/// Keep related values in a single state struct so multi-property mutations remain atomic.
 public final class LockIsolated<Value>: @unchecked Sendable {
     private let lock = NSLock()
     private var value: Value

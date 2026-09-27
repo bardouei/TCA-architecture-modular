@@ -42,17 +42,28 @@ public actor KeychainStore: SecureStore {
     // MARK: - Internal Keychain implementation (unchanged)
 
     private func set(_ data: Data, for key: StorageKey) async throws {
-        let q = KeychainQuery(service: service, account: key.rawValue)
-        var query = q.base
-        SecItemDelete(query as CFDictionary)
+        let query = KeychainQuery(service: service, account: key.rawValue).base
+        let attributes: [String: Any] = [
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        ]
 
-        query[kSecValueData as String] = data
-        query[kSecAttrAccessible as String] =
-            kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let updateStatus = SecItemUpdate(
+            query as CFDictionary,
+            attributes as CFDictionary
+        )
+        if updateStatus == errSecSuccess {
+            return
+        }
+        guard updateStatus == errSecItemNotFound else {
+            throw StorageError.underlying("Keychain update error: \(updateStatus)")
+        }
 
-        let status = SecItemAdd(query as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw StorageError.underlying("Keychain error: \(status)")
+        var addQuery = query
+        attributes.forEach { addQuery[$0.key] = $0.value }
+        let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
+        guard addStatus == errSecSuccess else {
+            throw StorageError.underlying("Keychain add error: \(addStatus)")
         }
     }
 

@@ -8,7 +8,7 @@ DomainCore
 NetworkCore
 DesignSystem
 StorageCore
-TCAAdapters
+AppDependencies
 AppFeature
 "
 

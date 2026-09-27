@@ -11,7 +11,7 @@ Launch    Home -> PostDetail
               \
         Catalog -> ProductDetailFeature
               |
-        TCAAdapters
+      AppDependencies
           /      \
  NetworkCore   StorageCore
           \      /
@@ -29,7 +29,7 @@ DesignSystem is consumed by presentation layers.
 - [NetworkCore](Packages/NetworkCore/README.md)
 - [StorageCore](Packages/StorageCore/README.md)
 - [DesignSystem](Packages/DesignSystem/README.md)
-- [TCAAdapters](Packages/TCAAdapters/README.md)
+- [AppDependencies](Packages/AppDependencies/README.md)
 - [AppFeature](Packages/AppFeature/README.md)
 - [App Clip](MyAppClip/README.md)
 - [Testing strategy](TESTING.md)
@@ -46,4 +46,4 @@ DesignSystem is consumed by presentation layers.
 
 ## Adding a feature
 
-Define framework-independent models and contracts in DomainCore. Put network or persistence implementations in NetworkCore or StorageCore. Adapt shared clients to TCA in TCAAdapters, implement the reducer and view in a feature package, and compose the feature in AppFeature. AppFeature coordinates flows; it does not contain networking or persistence business logic.
+Define framework-independent models and contracts in DomainCore. Put network or persistence implementations in NetworkCore or StorageCore. Adapt shared clients to TCA in AppDependencies, implement the reducer and view in a feature package, and compose the feature in AppFeature. AppFeature coordinates flows; it does not contain networking or persistence business logic.

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ModuleShowcaseView: View {
     @State private var model = ModuleShowcaseModel()
+    @State private var operationTask: Task<Void, Never>?
     @AppStorage("appearance.mode") private var appearanceRawValue = AppearanceMode.system.rawValue
     @AppStorage("app.language") private var languageRawValue = AppLanguage.english.rawValue
 
@@ -21,6 +22,10 @@ struct ModuleShowcaseView: View {
             }
             .background(DSColor.background)
             .navigationTitle("Module Showcase")
+        }
+        .onDisappear {
+            operationTask?.cancel()
+            operationTask = nil
         }
     }
 
@@ -163,7 +168,8 @@ struct ModuleShowcaseView: View {
         operation: @escaping @MainActor () async -> Void
     ) -> some View {
         DSButton(title, systemImage: image, style: .secondary) {
-            Task { await operation() }
+            operationTask?.cancel()
+            operationTask = Task { await operation() }
         }
     }
 

@@ -62,7 +62,7 @@ extension HomeFeature {
         case let .postTapped(post):
             state.path.append(
                 .postDetail(
-                    PostDetailFeature.State(post: post)
+                    PostDetail.State(post: post)
                 )
             )
             return .none

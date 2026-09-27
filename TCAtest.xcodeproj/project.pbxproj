@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1D7CF1F03067F73900AB9B9A /* AppDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 1D7CF1EF3067F73900AB9B9A /* AppDependencies */; };
 		1DD39ADB30680EE100E179BD /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0232F2F3FB200338353 /* AppFeature */; };
-		1DD39ADD30680EE100E179BD /* TCAAdapters in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0352F2F3FB200338353 /* TCAAdapters */; };
 		2625C8DE2EEDADB700BCD48D /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8DD2EEDADB700BCD48D /* ComposableArchitecture */; };
 		2625C8E02EEDADD400BCD48D /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8DF2EEDADD400BCD48D /* AppFeature */; };
 		2625C8E22EEDADD400BCD48D /* BaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8E12EEDADD400BCD48D /* BaseCore */; };
@@ -81,7 +80,6 @@
 /* Begin PBXFileReference section */
 		2625C8B12EED9E4500BCD48D /* AppFeature */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppFeature; sourceTree = "<group>"; };
 		2627A9682F09848600E1EDF9 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = DesignSystem; sourceTree = "<group>"; };
-		2627A96B2F0988F600E1EDF9 /* TCAAdapters */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TCAAdapters; sourceTree = "<group>"; };
 		2676BFF52F2F3F1A00338353 /* MyAppClip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyAppClip.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2676C0032F2F3F1B00338353 /* MyAppClipTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyAppClipTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2676C00D2F2F3F1B00338353 /* MyAppClipUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyAppClipUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,7 +143,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DD39ADD30680EE100E179BD /* TCAAdapters in Frameworks */,
 				1DD39ADB30680EE100E179BD /* AppFeature in Frameworks */,
 				1D7CF1F03067F73900AB9B9A /* AppDependencies in Frameworks */,
 				2676C0342F2F3FB200338353 /* StorageCore in Frameworks */,
@@ -245,7 +242,6 @@
 				26B27C4D2EED92EB003E5177 /* NetworkCore */,
 				26B27C4E2EED92EB003E5177 /* StorageCore */,
 				2627A9682F09848600E1EDF9 /* DesignSystem */,
-				2627A96B2F0988F600E1EDF9 /* TCAAdapters */,
 				2625C8B12EED9E4500BCD48D /* AppFeature */,
 			);
 			path = Packages;
@@ -419,7 +415,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2620;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					2676BFF42F2F3F1A00338353 = {
 						CreatedOnToolsVersion = 26.2;
@@ -601,6 +597,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 629X8QHQXD;
+				ENABLE_ENHANCED_SECURITY = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = YES;
+				ENABLE_POINTER_AUTHENTICATION = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyAppClip/Info.plist;
@@ -627,9 +626,11 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Debug;
 		};
@@ -642,6 +643,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 629X8QHQXD;
+				ENABLE_ENHANCED_SECURITY = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = YES;
+				ENABLE_POINTER_AUTHENTICATION = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyAppClip/Info.plist;
@@ -668,8 +672,9 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -768,6 +773,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -832,6 +838,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -894,7 +901,10 @@
 				DEVELOPMENT_ASSET_PATHS = "Packages/AppFeature Packages/NetworkCore Packages/DomainCore Packages/DesignSystem Packages/BaseCore Packages/StorageCore";
 				DEVELOPMENT_TEAM = 629X8QHQXD;
 				ENABLE_APP_SANDBOX = YES;
+				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = YES;
+				ENABLE_POINTER_AUTHENTICATION = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -926,6 +936,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
 				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
@@ -941,7 +952,10 @@
 				DEVELOPMENT_ASSET_PATHS = "Packages/AppFeature Packages/NetworkCore Packages/DomainCore Packages/DesignSystem Packages/BaseCore Packages/StorageCore";
 				DEVELOPMENT_TEAM = 629X8QHQXD;
 				ENABLE_APP_SANDBOX = YES;
+				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = YES;
+				ENABLE_POINTER_AUTHENTICATION = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -973,6 +987,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
 				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;

@@ -73,7 +73,7 @@ final class NetworkResponseTests: XCTestCase {
     }
 }
 
-func assertError(_ error: NetworkError, is expected: NetworkError, file: StaticString = #file, line: UInt = #line) {
+func assertError(_ error: NetworkError, is expected: NetworkError, file: StaticString = #filePath, line: UInt = #line) {
     switch (error, expected) {
     case (.badRequest, .badRequest),
          (.unauthorized, .unauthorized),

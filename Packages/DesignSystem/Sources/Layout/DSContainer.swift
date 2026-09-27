@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct DSContainer<Content: View>: View {
     
-    let content: Content
+    private let content: Content
     
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()

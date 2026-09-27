@@ -1,6 +1,6 @@
 //
-//  PostDetailFeature.swift
-//  FeatureHome
+//  PostDetail.swift
+//  AppFeature
 //
 //  Created by baner on 12/17/25.
 //
@@ -10,7 +10,7 @@ import Foundation
 import DomainCore
 
 @Reducer
-public struct PostDetailFeature {
+public struct PostDetail {
 
     public init() {}
 

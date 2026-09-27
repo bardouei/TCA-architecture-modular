@@ -11,10 +11,6 @@ let package = Package(
             name: "AppDependencies",
             targets: ["AppDependencies"]
         ),
-        .library(
-            name: "TCAAdapters",
-            targets: ["AppDependencies"]
-        ),
     ],
     dependencies: [
         // ✅ TCA
@@ -44,12 +40,12 @@ let package = Package(
             path: "Sources"
         ),
         .testTarget(
-            name: "TCAAdaptersTests",
+            name: "AppDependenciesTests",
             dependencies: [
                 "AppDependencies",
                 .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
             ],
-            path: "Tests/TCAAdaptersTests"
+            path: "Tests/AppDependenciesTests"
         ),
     ]
 )

@@ -21,19 +21,22 @@ public actor URLSessionNetworkClient {
         public let cachePolicy: URLRequest.CachePolicy
         public let maximumConnectionsPerHost: Int
         public let maxRetries: Int
+        public let initialRetryDelay: TimeInterval
         
         public init(
             baseURL: URL,
             timeoutInterval: TimeInterval = 30,
             cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy,
             maximumConnectionsPerHost: Int = 6,
-            maxRetries: Int = 3
+            maxRetries: Int = 3,
+            initialRetryDelay: TimeInterval = 0.25
         ) {
             self.baseURL = baseURL
             self.timeoutInterval = timeoutInterval
             self.cachePolicy = cachePolicy
             self.maximumConnectionsPerHost = maximumConnectionsPerHost
             self.maxRetries = maxRetries
+            self.initialRetryDelay = max(0, initialRetryDelay)
         }
     }
     
@@ -114,6 +117,12 @@ public actor URLSessionNetworkClient {
                     }
 
                     guard shouldRetry else { throw error }
+                    let retryAfter = retryResponse.headers["retry-after"].flatMap(TimeInterval.init)
+                    let exponentialDelay = configuration.initialRetryDelay * pow(2, Double(retryCount))
+                    let delay = min(retryAfter ?? exponentialDelay, 30)
+                    if delay > 0 {
+                        try await Task.sleep(for: .seconds(delay))
+                    }
                     retryCount += 1
                 }
             }

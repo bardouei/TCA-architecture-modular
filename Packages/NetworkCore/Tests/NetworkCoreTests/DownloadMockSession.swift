@@ -51,7 +51,7 @@ final class DownloadTests: XCTestCase {
         XCTAssertEqual(result.localURL, dest)
         XCTAssertTrue(FileManager.default.fileExists(atPath: dest.path))
 
-        let contents = try String(contentsOf: dest)
+        let contents = try String(contentsOf: dest, encoding: .utf8)
         XCTAssertEqual(contents, "FILEDATA")
     }
 
@@ -73,9 +73,9 @@ final class DownloadTests: XCTestCase {
 
         let req = DownloadRequest(url: URL(string:"https://example.com/x")!, destinationURL: dest)
 
-        let result = try await client.download(req)
+        _ = try await client.download(req)
 
-        let contents = try String(contentsOf: dest)
+        let contents = try String(contentsOf: dest, encoding: .utf8)
         XCTAssertEqual(contents, "FILEDATA")
     }
 }

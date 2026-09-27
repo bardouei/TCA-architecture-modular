@@ -12,9 +12,13 @@ let package = Package(
             targets: ["NetworkCore"]
         ), 
     ],
+    dependencies: [
+        .package(path: "../BaseCore")
+    ],
     targets: [
         .target(
-            name: "NetworkCore"
+            name: "NetworkCore",
+            dependencies: ["BaseCore"]
         ),
         .testTarget(
             name: "NetworkCoreTests",
