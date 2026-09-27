@@ -9,8 +9,6 @@ NetworkCore
 DesignSystem
 StorageCore
 TCAAdapters
-FeatureSplash
-FeatureHome
 AppFeature
 "
 

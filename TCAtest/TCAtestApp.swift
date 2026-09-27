@@ -12,6 +12,7 @@ import AppFeature
 @main
 struct TCAtestApp: App {
   @AppStorage("appearance.mode") private var appearanceRawValue = AppearanceMode.system.rawValue
+  @AppStorage("app.language") private var languageRawValue = AppLanguage.english.rawValue
 
   private let store = Store(initialState: AppFeature.State()) {
     AppFeature()
@@ -20,8 +21,13 @@ struct TCAtestApp: App {
   var body: some Scene {
     WindowGroup {
       AppView(store: store)
+        .environment(\.locale, selectedLanguage.locale)
         .preferredColorScheme(colorScheme)
     }
+  }
+
+  private var selectedLanguage: AppLanguage {
+    AppLanguage(rawValue: languageRawValue) ?? .english
   }
 
   private var colorScheme: ColorScheme? {

@@ -1,6 +1,6 @@
 # AppDependencies
 
-AppDependencies is the boundary between infrastructure modules and TCA's dependency system. NetworkCore and StorageCore remain independent of TCA, while features avoid constructing live infrastructure clients. The package directory and legacy product remain named `TCAAdapters` temporarily so existing Xcode local-package references continue to resolve; new source code imports `AppDependencies`.
+AppDependencies is the boundary between infrastructure modules and TCA's dependency system. NetworkCore and StorageCore remain independent of TCA, while features avoid constructing live infrastructure clients. The package directory and legacy product remain named `AppDependencies` temporarily so existing Xcode local-package references continue to resolve; new source code imports `AppDependencies`.
 
 ## Dependencies
 

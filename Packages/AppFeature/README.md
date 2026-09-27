@@ -1,6 +1,6 @@
 # AppFeature
 
-AppFeature is the application's logical composition root. It composes FeatureSplash and FeatureHome and coordinates root flow without implementing networking or persistence.
+AppFeature is the application's logical composition root. It owns the lightweight launch, home, and post-detail flows and composes the independent FeatureCatalog domain without implementing networking or persistence infrastructure.
 
 ```text
 AppFeature.State.destination

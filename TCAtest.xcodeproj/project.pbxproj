@@ -7,24 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D7CF1F03067F73900AB9B9A /* AppDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 1D7CF1EF3067F73900AB9B9A /* AppDependencies */; };
+		1DD39ADB30680EE100E179BD /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0232F2F3FB200338353 /* AppFeature */; };
+		1DD39ADD30680EE100E179BD /* TCAAdapters in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0352F2F3FB200338353 /* TCAAdapters */; };
 		2625C8DE2EEDADB700BCD48D /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8DD2EEDADB700BCD48D /* ComposableArchitecture */; };
 		2625C8E02EEDADD400BCD48D /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8DF2EEDADD400BCD48D /* AppFeature */; };
 		2625C8E22EEDADD400BCD48D /* BaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8E12EEDADD400BCD48D /* BaseCore */; };
 		2625C8E42EEDADD400BCD48D /* DomainCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8E32EEDADD400BCD48D /* DomainCore */; };
-		2625C8E62EEDADD400BCD48D /* FeatureHome in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8E52EEDADD400BCD48D /* FeatureHome */; };
-		2625C8E82EEDADD400BCD48D /* FeatureSplash in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8E72EEDADD400BCD48D /* FeatureSplash */; };
 		2625C8EA2EEDADD400BCD48D /* NetworkCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8E92EEDADD400BCD48D /* NetworkCore */; };
 		2625C8EC2EEDADD400BCD48D /* StorageCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2625C8EB2EEDADD400BCD48D /* StorageCore */; };
 		2627A96A2F09868400E1EDF9 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 2627A9692F09868400E1EDF9 /* DesignSystem */; };
 		2676C0172F2F3F1B00338353 /* MyAppClip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = 2676BFF52F2F3F1A00338353 /* MyAppClip.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		2676C0242F2F3FB200338353 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0232F2F3FB200338353 /* AppFeature */; };
 		2676C0262F2F3FB200338353 /* BaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0252F2F3FB200338353 /* BaseCore */; };
 		2676C0282F2F3FB200338353 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0272F2F3FB200338353 /* DesignSystem */; };
 		2676C02A2F2F3FB200338353 /* DomainCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0292F2F3FB200338353 /* DomainCore */; };
-		2676C02E2F2F3FB200338353 /* PostDetailFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C02D2F2F3FB200338353 /* PostDetailFeature */; };
 		2676C0322F2F3FB200338353 /* NetworkCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0312F2F3FB200338353 /* NetworkCore */; };
 		2676C0342F2F3FB200338353 /* StorageCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0332F2F3FB200338353 /* StorageCore */; };
-		2676C0362F2F3FB200338353 /* TCAAdapters in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0352F2F3FB200338353 /* TCAAdapters */; };
 		2676C0382F2F3FC000338353 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 2676C0372F2F3FC000338353 /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
@@ -82,8 +80,6 @@
 
 /* Begin PBXFileReference section */
 		2625C8B12EED9E4500BCD48D /* AppFeature */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppFeature; sourceTree = "<group>"; };
-		2625C8B22EED9F0700BCD48D /* FeatureHome */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = FeatureHome; sourceTree = "<group>"; };
-		2625C8B32EED9F0700BCD48D /* FeatureSplash */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = FeatureSplash; sourceTree = "<group>"; };
 		2627A9682F09848600E1EDF9 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = DesignSystem; sourceTree = "<group>"; };
 		2627A96B2F0988F600E1EDF9 /* TCAAdapters */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TCAAdapters; sourceTree = "<group>"; };
 		2676BFF52F2F3F1A00338353 /* MyAppClip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyAppClip.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,13 +145,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DD39ADD30680EE100E179BD /* TCAAdapters in Frameworks */,
+				1DD39ADB30680EE100E179BD /* AppFeature in Frameworks */,
+				1D7CF1F03067F73900AB9B9A /* AppDependencies in Frameworks */,
 				2676C0342F2F3FB200338353 /* StorageCore in Frameworks */,
 				2676C0282F2F3FB200338353 /* DesignSystem in Frameworks */,
 				2676C0382F2F3FC000338353 /* ComposableArchitecture in Frameworks */,
 				2676C0262F2F3FB200338353 /* BaseCore in Frameworks */,
-				2676C02E2F2F3FB200338353 /* PostDetailFeature in Frameworks */,
-				2676C0242F2F3FB200338353 /* AppFeature in Frameworks */,
-				2676C0362F2F3FB200338353 /* TCAAdapters in Frameworks */,
 				2676C0322F2F3FB200338353 /* NetworkCore in Frameworks */,
 				2676C02A2F2F3FB200338353 /* DomainCore in Frameworks */,
 			);
@@ -179,14 +175,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2625C8E82EEDADD400BCD48D /* FeatureSplash in Frameworks */,
 				2625C8EC2EEDADD400BCD48D /* StorageCore in Frameworks */,
 				2625C8DE2EEDADB700BCD48D /* ComposableArchitecture in Frameworks */,
 				2627A96A2F09868400E1EDF9 /* DesignSystem in Frameworks */,
 				2625C8EA2EEDADD400BCD48D /* NetworkCore in Frameworks */,
 				2625C8E22EEDADD400BCD48D /* BaseCore in Frameworks */,
 				2625C8E02EEDADD400BCD48D /* AppFeature in Frameworks */,
-				2625C8E62EEDADD400BCD48D /* FeatureHome in Frameworks */,
 				2625C8E42EEDADD400BCD48D /* DomainCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,6 +202,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1D7CF1EE3067F72B00AB9B9A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		26B27C0B2EED9006003E5177 = {
 			isa = PBXGroup;
 			children = (
@@ -218,6 +219,7 @@
 				2676BFF62F2F3F1A00338353 /* MyAppClip */,
 				2676C0062F2F3F1B00338353 /* MyAppClipTests */,
 				2676C0102F2F3F1B00338353 /* MyAppClipUITests */,
+				1D7CF1EE3067F72B00AB9B9A /* Frameworks */,
 				26B27C152EED9006003E5177 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -241,12 +243,10 @@
 				26B27C4B2EED92EB003E5177 /* BaseCore */,
 				26B27C4C2EED92EB003E5177 /* DomainCore */,
 				26B27C4D2EED92EB003E5177 /* NetworkCore */,
-				2627A9682F09848600E1EDF9 /* DesignSystem */,
 				26B27C4E2EED92EB003E5177 /* StorageCore */,
-				2625C8B12EED9E4500BCD48D /* AppFeature */,
-				2625C8B32EED9F0700BCD48D /* FeatureSplash */,
-				2625C8B22EED9F0700BCD48D /* FeatureHome */,
+				2627A9682F09848600E1EDF9 /* DesignSystem */,
 				2627A96B2F0988F600E1EDF9 /* TCAAdapters */,
+				2625C8B12EED9E4500BCD48D /* AppFeature */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -280,6 +280,7 @@
 				2676C0332F2F3FB200338353 /* StorageCore */,
 				2676C0352F2F3FB200338353 /* TCAAdapters */,
 				2676C0372F2F3FC000338353 /* ComposableArchitecture */,
+				1D7CF1EF3067F73900AB9B9A /* AppDependencies */,
 			);
 			productName = MyAppClip;
 			productReference = 2676BFF52F2F3F1A00338353 /* MyAppClip.app */;
@@ -450,6 +451,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = 26B27C0B2EED9006003E5177;
 			minimizedProjectReferenceProxies = 1;
@@ -623,7 +625,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -664,7 +666,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -1161,6 +1163,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1D7CF1EF3067F73900AB9B9A /* AppDependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppDependencies;
+		};
 		2625C8DD2EEDADB700BCD48D /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2625C8B42EEDA0C000BCD48D /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;

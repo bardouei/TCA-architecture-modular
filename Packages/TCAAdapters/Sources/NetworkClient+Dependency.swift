@@ -1,6 +1,6 @@
 //
 //  NetworkClient+Dependency.swift
-//  TCAAdapters
+//  AppDependencies
 //
 //  Created by baner on 1/3/26.
 //

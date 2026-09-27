@@ -8,22 +8,29 @@ public struct DSBadge: View {
         case error
     }
 
-    private let title: String
+    private let label: Text
     private let kind: Kind
 
-    public init(_ title: String, kind: Kind = .info) {
-        self.title = title
+    public init(_ title: LocalizedStringResource, kind: Kind = .info) {
+        self.label = Text(title)
+        self.kind = kind
+    }
+
+    /// Creates a badge for server-provided or user-provided content that must not
+    /// be interpreted as a localization key.
+    public init(verbatim title: String, kind: Kind = .info) {
+        self.label = Text(verbatim: title)
         self.kind = kind
     }
 
     public var body: some View {
-        Text(title)
+        label
             .font(DSTypography.caption.weight(.semibold))
             .foregroundStyle(color)
             .padding(.horizontal, DSSpacing.sm)
             .padding(.vertical, DSSpacing.xs)
             .background(color.opacity(0.14), in: Capsule())
-            .accessibilityLabel(title)
+            .accessibilityLabel(label)
     }
 
     private var color: Color {

@@ -8,10 +8,9 @@
 import SwiftUI
 import ComposableArchitecture
 import DomainCore
-import AppClipFeature
 
 struct AppClipView: View {
-    @Bindable var store: StoreOf<AppClipFeature>
+    @Bindable var store: StoreOf<ClipRootFeature>
 
     var body: some View {
         AppClipContentView(
@@ -43,7 +42,7 @@ struct AppClipView: View {
 private struct AppClipContentView: View {
     let post: EntityPost?
     let isLoading: Bool
-    let failure: AppClipFeature.Failure?
+    let failure: ClipRootFeature.Failure?
     let onRetry: () -> Void
 
     var body: some View {
@@ -64,7 +63,7 @@ private struct AppClipContentView: View {
         }
     }
 
-    private func message(for failure: AppClipFeature.Failure) -> LocalizedStringResource {
+    private func message(for failure: ClipRootFeature.Failure) -> LocalizedStringResource {
         switch failure {
         case .connection:
             "Check your internet connection and try again."

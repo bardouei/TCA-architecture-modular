@@ -7,7 +7,9 @@ TCAtest / MyAppClip
         |
     AppFeature ---------------------- App Clip Feature
      /      \
-Splash    FeatureHome -> PostDetailFeature
+Launch    Home -> PostDetail
+              \
+        Catalog -> ProductDetailFeature
               |
         TCAAdapters
           /      \
@@ -28,8 +30,6 @@ DesignSystem is consumed by presentation layers.
 - [StorageCore](Packages/StorageCore/README.md)
 - [DesignSystem](Packages/DesignSystem/README.md)
 - [TCAAdapters](Packages/TCAAdapters/README.md)
-- [FeatureSplash](Packages/FeatureSplash/README.md)
-- [FeatureHome](Packages/FeatureHome/README.md)
 - [AppFeature](Packages/AppFeature/README.md)
 - [App Clip](MyAppClip/README.md)
 - [Testing strategy](TESTING.md)

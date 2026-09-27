@@ -1,11 +1,11 @@
 import SwiftUI
 
 public struct DSSectionHeader: View {
-    private let title: String
-    private let subtitle: String?
+    private let title: LocalizedStringResource
+    private let subtitle: LocalizedStringResource?
     private let systemImage: String
 
-    public init(_ title: String, subtitle: String? = nil, systemImage: String) {
+    public init(_ title: LocalizedStringResource, subtitle: LocalizedStringResource? = nil, systemImage: String) {
         self.title = title
         self.subtitle = subtitle
         self.systemImage = systemImage

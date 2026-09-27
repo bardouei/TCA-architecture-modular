@@ -1,10 +1,10 @@
 import XCTest
 @testable import AppDependencies
 
-final class TCAAdaptersTests: XCTestCase {
+final class AppDependenciesTests: XCTestCase {
     func testDiskCacheClientRoundTripAndRemove() async throws {
         let directory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("TCAAdaptersTests.\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("AppDependenciesTests.\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager.default.removeItem(at: directory) }
         let client = CacheClient.disk(directory: directory)
         let data = Data("cached".utf8)

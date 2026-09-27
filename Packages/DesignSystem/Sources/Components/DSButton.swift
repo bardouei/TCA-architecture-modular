@@ -15,14 +15,14 @@ public struct DSButton: View {
         case destructive
     }
 
-    private let title: String
+    private let title: LocalizedStringResource
     private let systemImage: String?
     private let style: Style
     private let isLoading: Bool
     private let action: () -> Void
 
     public init(
-        _ title: String,
+        _ title: LocalizedStringResource,
         systemImage: String? = nil,
         style: Style = .primary,
         isLoading: Bool = false,
@@ -55,7 +55,7 @@ public struct DSButton: View {
                 .clipShape(RoundedRectangle(cornerRadius: DSRadius.md))
         }
         .disabled(isLoading)
-        .accessibilityLabel(title)
+        .accessibilityLabel(Text(title))
     }
 
     private var backgroundColor: Color {

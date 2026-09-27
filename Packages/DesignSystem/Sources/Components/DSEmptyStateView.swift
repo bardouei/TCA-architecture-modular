@@ -9,12 +9,12 @@ import SwiftUI
 
 public struct DSEmptyStateView: View {
     
-    let title: String
-    let description: String
+    let title: LocalizedStringResource
+    let description: LocalizedStringResource
     
     public init(
-        title: String,
-        description: String
+        title: LocalizedStringResource,
+        description: LocalizedStringResource
     ) {
         self.title = title
         self.description = description

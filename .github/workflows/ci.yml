@@ -19,8 +19,6 @@ jobs:
           - Packages/StorageCore
           - Packages/DesignSystem
           - Packages/TCAAdapters
-          - Packages/FeatureSplash
-          - Packages/FeatureHome
           - Packages/AppFeature
     steps:
       - uses: actions/checkout@v4
